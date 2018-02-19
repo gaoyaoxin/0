@@ -1,10 +1,10 @@
 <template lang="pug">
 div#dev
-  h1 Dev
-  h1 Count: {{ state.count }}
-  button(@click="incrCount") Increment
-  initial-test
-  foobar
+    h1 Dev
+    h1 Count: {{ state.count }}
+    button(@click="incrCount") Increment
+    initial-test
+    foobar
 </template>
 
 <script lang="coffee">

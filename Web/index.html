@@ -1,12 +1,33 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>idict-web</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+    <title>IDict</title>
+</head>
+<body>
+<script>
+    console.log('index.html')
+</script>
+<div id="app">
+<!--
+    1234<br>
+    {{myfun()}}<br>
+    {{abc}}
+    <span v-if="seen">
+        v-if seen
+    </span>
+-->
+    <ol>
+        <todo-item v-for="item in alist"
+                   v-bind:todo="item"
+                   v-bind:key="item.id">
+        </todo-item>
+    </ol>
+    <form v-on:submit="my_submit" action="api">
+        <button type="submit">submit</button>
+    </form>
+</div>
+
+<!-- built files will be auto injected -->
+</body>
 </html>
