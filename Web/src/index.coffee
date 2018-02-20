@@ -1,28 +1,25 @@
 # The Vue build version to load with the `import` command
 # (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-#import TodoList from './TodoList.vue'
-#import App from './App.vue'
+import Dict from './Dict'
 #import router from './router'
 
 Vue.config.productionTip = false
 
-#new Vue
-#    el: '#app'
+window.dict=new Vue
+    el: '#dict'
 #    router
-#    components: { App }
-#    template: '<App/>'
-#    data:{
-#        message:'message'
-#    }
+    template: '<dict/>'
+    components: { Dict }
+
 
 
 #Vue.component 'todo-item',
 #    template:'<li>{{todo.text}}123</li>'
 #    props:['todo']
 
-window.app=new Vue
-    el:'#app'
+#window.app=new Vue
+#    el:'#dict'
 #    data:
 #        message:'a message'
 #    data:

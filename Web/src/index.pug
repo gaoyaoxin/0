@@ -6,3 +6,22 @@ html
         title IDict
     body
         #dict
+//
+    1234<br>
+    {{myfun()}}<br>
+    {{abc}}
+    <span v-if="seen">
+    v-if seen
+    </span>
+//
+    <ol>
+    <todo-item v-for="item in alist"
+    v-bind:todo="item"
+    v-bind:key="item.id">
+    </todo-item>
+    </ol>
+    <form @submit.prevent="my_submit" action="api">
+    <button type="submit">submit</button>
+    </form>
+    <span>{{g_data}}</span>
+// built files will be auto injected 2
