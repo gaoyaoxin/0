@@ -1,7 +1,8 @@
 <template lang="pug">
     #dict
         h1 Dict
-        #todo-list
+        #todo
+        p after
 </template>
 <!--#app-->
     <!--//img(src="./assets/logo.png")-->
@@ -14,10 +15,12 @@
     <!---->
 
 <script lang="coffee">
-    import Vue from 'Vue'
-    import TodoList from './TodoList'
-    
-    export default {}
+    import todo from './todo.vue'
+    console.log todo
+    debugger
+    export default {
+        components:{todo}
+    }
 </script>
 
 <style lang="stylus">

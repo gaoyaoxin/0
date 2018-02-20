@@ -1,5 +1,5 @@
 <template lang="pug">
-    p TodoList template
+    p todo
 </template>
     <!--.todo-list-->
         <!--p {{title}}-->
@@ -8,12 +8,9 @@
             <!--li.todo-item(v-for='item,i in items') 第{{i}}个 {{item.text}}-->
         <!--p(v-if='!items.length') none-->
 
-
-
 <script lang="coffee">
-    console.log 'in TodoList.vue'
+    console.log 'here'
     export default {}
-#        props: ['title']
 #        data:
 #            items: -> []
 #        methods:
