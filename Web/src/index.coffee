@@ -1,7 +1,7 @@
 # The Vue build version to load with the `import` command
 # (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import TodoList from './components/TodoList.vue'
+#import TodoList from './TodoList.vue'
 #import App from './App.vue'
 #import router from './router'
 
@@ -42,7 +42,7 @@ window.app=new Vue
 #    computed:
 #        g_data: -> this.abc.length
 #    created: -> console.log "init: ",this.alist
-    components: { TodoList:TodoList }
+#    components: { TodoList:TodoList }
 #    components: {App}
     
 

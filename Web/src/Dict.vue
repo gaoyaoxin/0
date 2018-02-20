@@ -1,5 +1,6 @@
 <template lang="pug">
-    p in App.vue
+    h1 Dict
+    
 </template>
 <!--#app-->
     <!--//img(src="./assets/logo.png")-->
@@ -12,7 +13,7 @@
     <!---->
 
 <script lang="coffee">
-#console.log 'in App.vue module'
+#    import TodoList from './TodoList.vue'
 #export default
 #    name: 'app'
 #    data: (comp)->
