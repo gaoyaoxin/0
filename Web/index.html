@@ -5,10 +5,10 @@
     <title>IDict</title>
 </head>
 <body>
-<script>
-    console.log('index.html')
-</script>
 <div id="app">
+    <TodoList/>
+</div>
+
 <!--
     1234<br>
     {{myfun()}}<br>
@@ -17,16 +17,22 @@
         v-if seen
     </span>
 -->
+<!--
     <ol>
         <todo-item v-for="item in alist"
                    v-bind:todo="item"
                    v-bind:key="item.id">
         </todo-item>
     </ol>
-    <form v-on:submit="my_submit" action="api">
+    <form @submit.prevent="my_submit" action="api">
         <button type="submit">submit</button>
     </form>
-</div>
+    <span>{{g_data}}</span>
+-->
+    
+
+
+<todo-list id="todo-list-1"></todo-list>
 
 <!-- built files will be auto injected -->
 </body>
