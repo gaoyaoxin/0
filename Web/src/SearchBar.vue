@@ -5,15 +5,7 @@
         p after
         el-button button
 </template>
-<!--#app-->
-    <!--//img(src="./assets/logo.png")-->
-    <!--p-->
-        <!--a(href="/#/") Index-->
-        <!--|        -->
-        <!--a(href="/#/dev") Dev-->
-    <!--//router-view-->
-    <!--| text-->
-    <!---->
+
 
 <script lang="coffee">
     import TodoList from './TodoList/index.vue'
