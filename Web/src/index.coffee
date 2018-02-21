@@ -15,12 +15,10 @@ window.dict=new Vue
     template: '<dict/>'
     components: {Dict}
 
+
 window.ws=new WebSocket 'ws://echo.websocket.org'
-ws.onopen=->
-    ws.send 'hello server'
-    
+#ws.onopen=->
 ws.onmessage=(e)->
-    console.log e
     console.log e.data
     
 

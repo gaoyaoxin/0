@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_json import FlaskJSON,JsonError,json_response,as_json
+
 from dict import Dict
 
 d=Dict()
@@ -9,6 +10,9 @@ json=FlaskJSON(app)
 @app.route('/',methods=['GET'])
 def root():
     return '/'
+
+
+
 
 @app.route('/search',methods=['GET'])
 @as_json
