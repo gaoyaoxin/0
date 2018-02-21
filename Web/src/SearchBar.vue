@@ -1,19 +1,20 @@
 <template lang="pug">
-    #dict
-        h1 Dict
-        todo-list(title='My Todo List')
-        p after
-        el-button button
+    #search-bar
+        el-input#search-input(v-model='search_text' @input='search_change')
+            el-button(slot='append' icon='el-icon-search')
 </template>
 
-
 <script lang="coffee">
-    import TodoList from './TodoList/index.vue'
     export default
-        components:{TodoList}
+        data:->
+            search_text: 'init search text'
+        methods:
+            search_change:-> 
+                console.log this.search_text
+                ws.send 'search: '+this.search_text
+        
 </script>
 
 <style lang="stylus">
-    #dict
-        text-align center
+    
 </style>

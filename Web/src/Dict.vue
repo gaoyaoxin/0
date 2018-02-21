@@ -1,25 +1,17 @@
 <template lang="pug">
     #dict
-        h1 Dict
-        todo-list(title='My Todo List')
-        p after
-        el-button button
+        search-bar
 </template>
-<!--#app-->
-    <!--//img(src="./assets/logo.png")-->
-    <!--p-->
-        <!--a(href="/#/") Index-->
-        <!--|        -->
-        <!--a(href="/#/dev") Dev-->
-    <!--//router-view-->
-    <!--| text-->
-    <!---->
+    
+
 
 <script lang="coffee">
-    import TodoList from './TodoList/index.vue'
+    import SearchBar from './SearchBar.vue'
     export default
-        components:{TodoList}
+        components:{SearchBar}
 </script>
+
+
 
 <style lang="stylus">
     #dict
