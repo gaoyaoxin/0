@@ -41,18 +41,18 @@ ws.onmessage=(e)->
         dict.item=dict.items[0]
 #        items.splice(0,items.length,...new_items.retval)
 
-window.search_input=document.querySelector('input#search-input')
 document.addEventListener 'keydown', (e)->
-    if e.srcElement!=search_input
+    search_input=document.querySelector('input#search-input')
+    if e.srcElement!=search_input && dict.items
         console.log e.key
         switch true
             when e.key=='ArrowRight' || (dict.last_key!='Shift' && e.key=='Tab')
-                dict.item=dict.items[dict.item.i+1] if dict.item.i+1<dict.items.length
+                dict.item=dict.items[dict.item.i+1] if dict.item?.i+1<dict.items.length
                 e.preventDefault()
             when e.key=='ArrowLeft'  || (dict.last_key=='Shift' && e.key=='Tab')
-                dict.item=dict.items[dict.item.i-1] if dict.item.i-1>=0
+                dict.item=dict.items[dict.item.i-1] if dict.item?.i-1>=0
                 e.stopPropagation()
-            when e.key=='s'
+            when e.key=='s' || e.key=='f'
                 search_input.focus()
                 search_input.value=''
                 e.preventDefault()

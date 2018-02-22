@@ -6,10 +6,10 @@
             el-aside#sidebar(width='20%')
                 #item-list
                     .item(v-for='item in items')
-                        h6.item-index(@click='select_item(item)') {{item.index}}
+                        h6.item-index(@click='select_item') {{item.index}}
             el-main#content
-                h1#item-title(v-html='item.title')
-                #item-content(v-html='item.content')
+                h1#item-title(v-if='item' v-html='item.title')
+                #item-content(v-if='item' v-html='item.content')
 </template>
     
 
@@ -18,7 +18,7 @@
     export default
         data: ->
             items:[]
-            item:{}
+            item:null
         methods:
             select_item:(item)->
                 this.item=item
@@ -38,6 +38,7 @@
                     font-size 1.7em
         #body
             #sidebar
+                height 600px
                 border-right 1px solid #eeeeee
                 border-left 1px solid #eeeeee
                 padding-left 1em
