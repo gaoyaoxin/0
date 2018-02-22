@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-from flask import request, current_app as app
+from flask import request, current_app as app, Flask
 
 
 class WebSocket(object):
@@ -12,7 +12,7 @@ class WebSocket(object):
         if app is not None:
             self.init_app(app)
 
-    def init_app(self, app):
+    def init_app(self, app:Flask):
         url = app.config.get('WEBSOCKET_URL', '/ws')
 
         @app.route(url)
@@ -23,8 +23,7 @@ class WebSocket(object):
                     message = socket.receive()
                     if not message:
                         break
-
-                    self.dispatch_message(message)
+                    ret_val=self.dispatch_message(message)
 
     def on(self, event):
         def decorator(handler):
@@ -54,7 +53,7 @@ class WebSocket(object):
             except Exception as e:
                 app.logger.error(e)
             else:
-                event = msg.get('event')
+                event = msg.get('api')
                 self.dispatch(event, msg.get('data'))
             finally:
                 pass

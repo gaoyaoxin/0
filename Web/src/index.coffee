@@ -8,19 +8,14 @@ import Dict from './Dict'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 
-
-window.dict=new Vue
-    el: '#dict'
+window.Vue=Vue
+window.root=new Vue
+    el: '#root'
 #    router
-    template: '<dict/>'
+    template: '<dict ref="dict"/>'
     components: {Dict}
 
 
-window.ws=new WebSocket 'ws://echo.websocket.org'
-#ws.onopen=->
-ws.onmessage=(e)->
-    console.log e.data
-    
 
 
 #Vue.component 'todo-item',

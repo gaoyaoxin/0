@@ -9,5 +9,5 @@ class Dict:
     def search(self, input_str:str)->list:
         pattern=input_str.replace('?','.').replace('*','.*')+'.*'
         pattern_reg=re.compile(pattern)
-        return [item for item in self.items if pattern_reg.match(item['index'])]
+        return [item for item in self.items if pattern_reg.match(item['index'])][:20]
     

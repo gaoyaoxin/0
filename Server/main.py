@@ -1,33 +1,45 @@
 from flask import Flask
 from flask_json import FlaskJSON,JsonError,json_response,as_json
-
+from flask_sockets import Sockets
 from dict import Dict
+import logging
+import json
+
+
 
 d=Dict()
 app=Flask(__name__)
-json=FlaskJSON(app)
+sockets=Sockets(app)
+# json=FlaskJSON(app)
 
-@app.route('/',methods=['GET'])
-def root():
+
+
+@app.route('/')
+def index():
     return '/'
 
 
+@sockets.route('/ws')
+def websocket_dispatch(ws):
+    while not ws.closed:
+        frame=ws.receive()
+        print(frame)
+        if frame:
+            request=json.loads(frame)
+            retval=getattr(d,request['api'])(**request['args'])
+            ws.send(json.dumps({'status':200,'retval':retval}))
+        else:
+            ws.send()
+    # print()
+    # return 'ret_data'
+    # d.search('だく')[:20]
 
 
-@app.route('/search',methods=['GET'])
-@as_json
-def search():
-    return d.search('だく')[:20]
 
-@app.route('/recognize',methods=['GET','POST'])
-@as_json
-def recognize():
-    return [1,2,3,4]
-
-@app.route('/test',methods=['GET','POST'])
-@as_json
-def test():
-    return {'key':'中文'}
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8080,debug=True)
+    from gevent import pywsgi
+    from geventwebsocket.handler import WebSocketHandler
+    server = pywsgi.WSGIServer(('', 8081), app, handler_class=WebSocketHandler)
+    server.serve_forever()
+    # app.run(host='0.0.0.0',port=8080,debug=True)
