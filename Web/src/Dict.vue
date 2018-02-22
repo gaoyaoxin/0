@@ -1,38 +1,64 @@
 <template lang="pug">
-    #dict
-        search-bar(ref='search_bar')
-        #item-list
-            .item(v-for='item in items')
-                h2(v-html='item.title')
-                .content(v-html='item.content')
+    el-container#dict
+        el-header#header
+            search-bar(ref='search_bar')
+        el-container#body
+            el-aside#sidebar(width='20%')
+                #item-list
+                    .item(v-for='item in items')
+                        h6.item-index(@click='select_item(item)') {{item.index}}
+            el-main#content
+                h1#item-title(v-html='item.title')
+                #item-content(v-html='item.content')
 </template>
     
 
-
 <script lang="coffee">
     import SearchBar from './SearchBar.vue'
-    window.ws=new WebSocket 'ws://localhost:8081/ws'
-    ###
-    ws.onopen=->
-        ws.send JSON.stringify
-            api: 'search'
-            args:
-                input_str:'だく'
-    ###
-    ws.onmessage=(e)->
-        items=root.$refs.dict.items
-        new_items=JSON.parse(e.data)
-        console.log new_items
-        items.splice(0,items.length,...new_items.retval)
     export default
         data: ->
             items:[]
+            item:{}
+        methods:
+            select_item:(item)->
+                this.item=item
         components:{SearchBar}
 </script>
 
 
-
 <style lang="stylus">
     #dict
-        text-align center
+        width 97%
+        margin auto
+        #header
+            padding unset
+            #search-bar
+                margin-top 20px
+                .el-icon-search
+                    font-size 1.7em
+        #body
+            #sidebar
+                border-right 1px solid #eeeeee
+                border-left 1px solid #eeeeee
+                padding-left 1em
+                h6.item-index 
+                    font-size 1em
+                    margin-top 1em
+                    margin-bottom unset
+            #content
+                line-height 1.5em
+                padding-top 30px
+                border-right 1px solid #eeeeee
+                font-size 1.3em
+                #item-title
+                    font-size 60px
+                    font-weight normal
+                    margin-top 0
+                    margin-bottom 40px
+                .exp
+                    &:not(:first-child)
+                        margin-top 1em
+                    margin-top 0
+                    margin-bottom 0
+                    color #0070C0
 </style>

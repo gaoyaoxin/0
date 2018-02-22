@@ -7,7 +7,6 @@ class Dict:
     
     # 查询单词
     def search(self, input_str:str)->list:
-        pattern=input_str.replace('?','.').replace('*','.*')+'.*'
-        pattern_reg=re.compile(pattern)
+        pattern_reg=re.compile(input_str)
         return [item for item in self.items if pattern_reg.match(item['index'])][:20]
     
