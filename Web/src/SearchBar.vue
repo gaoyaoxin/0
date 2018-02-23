@@ -1,31 +1,27 @@
 <template lang="pug">
     #search-bar
-        el-input#search-input(v-model='search_text' @change='search_change')
+        el-input#search-input(v-model='search_text' @keyup.native.enter='search(search_text)' ref='search_input' tabindex='0')
             el-button(slot='append' icon='el-icon-search')
 </template>
 
 <script lang="coffee">
-    import _ from 'underscore'
     export default
         data:->
             search_text: ''
         methods:
-            search_change: ->
-                ws.send JSON.stringify
-                    api: 'search'
-                    args:
-                        input_str: this.search_text
-                console.log 'search:',this.search_text
-                document.querySelector('input#search-input').blur()
-###
-            search_change: _.debounce ->
+            search:(search_text)->
+                if search_text && search_text!=this.last_search_text
+                    history.pushState({search_text},'',"##{search_text}")
+                    if dict.search_results[search_text]
+                        return dict.search_results[search_text]
                     ws.send JSON.stringify
                         api: 'search'
                         args:
-                            input_str: this.search_text
-                    console.log 'changed'
-                , 1000
-###
+                            search_text: search_text
+                    console.log 'search:',search_text
+                this.last_search_text=search_text
+        mounted: ->
+            this.search_input_el=document.querySelector('#search-input')
         
 </script>
 

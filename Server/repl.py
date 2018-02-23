@@ -177,4 +177,7 @@ item
 # class="item-title"
 for item in items:
     item['title']=item['title'].replace('<h1 class="item-title">','').replace('</h1>','')
-items[2000]['content']
+items[50]['title']
+s='abcd'
+s.replace('ab','cd')
+    

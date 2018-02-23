@@ -28,12 +28,6 @@ def websocket_dispatch(ws):
             request=json.loads(frame)
             retval=getattr(d,request['api'])(**request['args'])
             ws.send(json.dumps({'status':200,'retval':retval}))
-        else:
-            ws.send()
-    # print()
-    # return 'ret_data'
-    # d.search('だく')[:20]
-
 
 
 
