@@ -31,29 +31,34 @@
             # init search results cache
             dict.search_results={}
             
-            # websocket communication
-            window.ws=new WebSocket 'ws://localhost:8081/ws'
-            ###
-            todo: 连接服务器成功的状态展示
-            ws.onopen=->
-                ws.send JSON.stringify
-                    api: 'search'
-                    args:
-                        input_str:'だく'
-            ###
-            
-            ws.onmessage=(e)->
-                response=JSON.parse(e.data)
-                console.log response
-                response.retval.forEach (x,i)-> x.i=i # 加入 index
-                dict.search_results[search_bar.search_text]=dict.items=response.retval
-                if dict.items
-                    dict.item=dict.items[0]
-                dict.search_bar.search_input_el.blur()
-                dict.sidebar.$el.focus()
-                
-                
-            
+            window.websocket_connect=->
+                if !window.ws || Date.now()-ws.last_connected>1000*5
+                    console.log 'try sconnecting to the server'
+                    window.ws=new WebSocket 'ws://localhost:8081/ws'
+                    ws.last_connected=new Date()
+                    ws.onopen=(event)->
+                        console.log 'websocket connected with server'
+                    ws.onmessage=(event)->
+                        response=JSON.parse(event.data)
+                        console.log response
+                        response.retval.forEach (x,i)-> x.i=i # 加入 index
+                        dict.search_results[search_bar.search_text]=dict.items=response.retval
+                        if dict.items
+                            dict.item=dict.items[0]
+                        dict.search_bar.search_input_el.blur()
+                        dict.sidebar.$el.focus()
+                    ws.onerror=(event)->
+                        console.log 'websocket error'
+                        setTimeout websocket_connect, 2000
+                    ws.onclose=(event)->
+                        console.log 'websocket closed'
+                        setTimeout websocket_connect, 2000
+                else
+                    console.error 'disconnected with the server'
+            websocket_connect()
+                    
+                    
+                    
             # handle sidebar key events
             sidebar.$el.addEventListener 'keydown',(event)->
                 key=event.key
