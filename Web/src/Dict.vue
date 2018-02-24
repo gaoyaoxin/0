@@ -121,9 +121,12 @@
                 border-left 1px solid #eeeeee
                 padding-left 1em
                 h6.item-index 
+                    font-weight normal
                     font-size 1em
-                    margin-top 1em
+                    padding-top 1em
+                    margin-top unset
                     margin-bottom unset
+                    cursor pointer
             #content
                 height 600px
                 line-height 1.5em
@@ -136,6 +139,8 @@
                     font-weight normal
                     margin-top 0
                     margin-bottom 40px
+                    word-break keep-all
+                    word-wrap break-word
                 .exp
                     margin-top 0
                     margin-bottom 0
