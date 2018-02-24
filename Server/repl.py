@@ -29,6 +29,17 @@ with open('./Data/jp-dict-items.pkl','rb') as f:
     items=pickle.load(f)
 
 
+# content line <-> html
+def content2html(item):
+    item['content']='\n'.join(item['content'])
+for item in items:
+    content2html(item)
+    
+def content2lines(item):
+    item['content']=item['content'].split('\n')
+for item in items:
+    content2lines(item)
+
 
 # 提取单词，删去拼音，修改格式
 s='回礼 huílǐ；回赠礼品 huízèng lǐpǐn．（物）回礼 huílǐ．<br>'
@@ -117,35 +128,6 @@ items_str[-10:]
 item=items[0]
 
 
-# todo: <b>［シソーラス］</b>あたたかい<br> 相反的 eg-cn/eg-jp 拼音
-
-
-
-# 查询单词
-def search(input_str:str)->list:
-    pattern=input_str.replace('?','.').replace('*','.*')+'.*'
-    pattern_reg=re.compile(pattern)
-    return [item for item in items if pattern_reg.match(item['index'])]
-
-
-# content line <-> html
-def content2html(item):
-    item['content']='\n'.join(item['content'])
-for item in items:
-    content2html(item)
-    
-def content2lines(item):
-    item['content']=item['content'].split('\n')
-for item in items:
-    content2lines(item)
-    
-items[2000]
-search('あたたかい')
-item=items[1101]
-print(item['content'])
-item['content'][-10:]
-
-
 
 # add id for items
 for i,item in enumerate(items):
@@ -180,4 +162,38 @@ for item in items:
 items[50]['title']
 s='abcd'
 s.replace('ab','cd')
-    
+
+
+# ［シソーラス］中日例句互换，去掉句号
+for item in items:
+    synonym=False
+    for i,s in enumerate(item['content']):
+        if re.match('.*［シソーラス］.*',s):
+            synonym=True
+        if synonym:
+            item['content'][i]=re.sub('(.*)．</span>／<span class="eg-cn">(.*)',r'\1</span>／<span class="eg-cn">\2',s)
+s='<span class="eg-jp">もろ手をあげて賛成する．</span>／<span class="eg-cn">～双手赞成</span><br>'
+s='<div class="egs"><span class="eg-jp">杯をあげる．</span>／<span class="eg-cn">～杯</span><br>'
+re.sub('(.*)．</span>／<span class="eg-cn">(.*)',r'\1</span>／<span class="eg-cn">\2',s)
+item
+
+
+
+def search(search_text:str)->list:
+    pattern_reg=re.compile(search_text)
+    def resolve(item):
+        if item['title'].startswith('@@@LINK='):
+            real_title=item['title'].replace('@@@LINK=','')
+            for x in items:
+                if x['title']==real_title:
+                    return x
+        else:
+            return item
+    result=[item for item in items if pattern_reg.match(item['index'])][:17]
+    return [resolve(item) for item in result]
+results=search('あげる【上げる・挙げる・揚げる】')
+item=results[0]
+print(item['content'])
+items[500]
+re.sub('xxx','yyy','zzz')
+

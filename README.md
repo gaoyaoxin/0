@@ -6,7 +6,7 @@
 
 ## 预览
 
-![1](preview/1.png)
+![1](preview/1.png?raw=true)
 
 ## 功能
 
