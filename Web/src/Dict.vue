@@ -3,7 +3,7 @@
         el-header#header
             search-bar(ref='search_bar')
         el-container#body
-            el-aside#sidebar(ref='sidebar' tabindex='1')
+            el-aside#sidebar(ref='sidebar' tabindex='1' width='250px')
                 #item-list
                     .item(v-for='item in items')
                         h6.item-index(@click='select_item(item)') {{item.index}}
@@ -147,39 +147,41 @@
             #search-bar
                 margin-top 20px
                 .el-icon-search
-                    font-size 1.7em
+                    font-size 1.7rem
         #body
             #sidebar
-                min-width: 300px;
+                min-width 250px
                 height 600px
                 border-right 1px solid #eeeeee
                 border-left 1px solid #eeeeee
                 padding-left 1em
                 h6.item-index 
                     font-weight normal
-                    font-size 1em
-                    padding-top 1em
+                    font-size 1rem
+                    padding-top 1rem
                     margin-top unset
                     margin-bottom unset
                     cursor pointer
             #content
                 height 600px
-                line-height 1.5em
-                padding-top 30px
+                line-height 1.5rem
+                padding-top 15px
                 border-right 1px solid #eeeeee
-                font-size 1.3em
+                font-size 1.3rem
                 #item-title
-                    line-height 1em
-                    font-size 60px
+                    line-height 4rem
+                    font-size 4rem
                     font-weight normal
                     margin-top 0
-                    margin-bottom 40px
+                    margin-bottom 15px
                     word-break keep-all
                     word-wrap break-word
                 .exp
                     margin-top 0
                     margin-bottom 0
-                    color #0070C0
+                    color #0063b4
+                    line-height 2rem
                 .egs
-                    margin-bottom 1em
+                    margin-bottom 1rem
+                    font-size 1.2rem
 </style>
