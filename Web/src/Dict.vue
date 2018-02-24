@@ -7,7 +7,7 @@
                 #item-list
                     .item(v-for='item in items')
                         h6.item-index(@click='select_item(item)') {{item.index}}
-            el-main#content
+            el-main#content(ref='content' tabindex='2')
                 h1#item-title(v-if='item' v-html='item.title')
                 #item-content(v-if='item' v-html='item.content')
 </template>
@@ -19,17 +19,32 @@
         data: ->
             items:[]
             item:null
+            search_bar:null
+            sidebar:null
+            content:null
+        components:{SearchBar}
         methods:
             select_item:(item)->
                 this.item=item
-        components:{SearchBar}
+                history.replaceState(null,'',"##{dict.search_bar.search_text},#{dict.item.i}")
+            # 切换至 上一条目/下一条目
+            next_item:()->
+                this.sidebar.$el.focus()
+                this.select_item(this.items[this.item.i+1]) if this.item?.i+1<this.items.length
+            previous_item:()->
+                this.sidebar.$el.focus()
+                this.select_item(this.items[this.item.i-1]) if this.item?.i-1>=0
+            select_item_i:(i)->
+                this.sidebar.$el.focus()
+                this.select_item(dict.items[i]) if 0<=i<dict.items.length
+        
         mounted: ->
-            window.dict=this
-            sidebar=this.sidebar=this.$refs.sidebar
-            search_bar=this.search_bar=this.$refs.search_bar
+            window.dict = this
+            sidebar     = this.sidebar    = this.$refs.sidebar
+            search_bar  = this.search_bar = this.$refs.search_bar
+            content     = this.content    = this.$refs.content
             
-            # init search results cache
-            dict.search_results={}
+            dict.search_results = {} # 搜索结果缓存
             
             window.websocket_connect=->
                 if !window.ws || Date.now()-ws.last_connected>1000*5
@@ -45,7 +60,7 @@
                         dict.search_results[search_bar.search_text]=dict.items=response.retval
                         if dict.items
                             dict.item=dict.items[0]
-                        dict.search_bar.search_input_el.blur()
+                        search_bar.blur()
                         dict.sidebar.$el.focus()
                     ws.onerror=(event)->
                         console.log 'websocket error'
@@ -56,55 +71,70 @@
                 else
                     console.error 'disconnected with the server'
             websocket_connect()
-                    
-                    
-                    
-            # handle sidebar key events
-            sidebar.$el.addEventListener 'keydown',(event)->
-                key=event.key
-                console.log key
-                search_input=search_bar.search_input
-            #    debugger
-                switch true
-                    # Navigate
-                    when !event.shiftKey && key=='Tab'
-                        dict.item=dict.items[dict.item.i+1] if dict.item?.i+1<dict.items.length
-                        event.preventDefault()
-                    when event.shiftKey && key=='Tab'
-                        dict.item=dict.items[dict.item.i-1] if dict.item?.i-1>=0
-                        event.preventDefault()
-                    when !isNaN(key)
-                        dict.item=dict.items[key-1] if 0<=key-1<dict.items.length
-                    # Focus search input
-                    when key=='s' || key=='f'
-                        event.preventDefault()
-                        search_bar.search_input_el.value=''
-                        search_bar.search_input_el.focus()
-                    when key=='e'
-                        event.preventDefault()
-                        search_bar.search_input_el.focus()
             
-            # handle global(dict) key events
-            document.addEventListener 'keydown',(event)->
+            
+            
+            document.onkeydown=(event)->
                 key=event.key
-                switch true
-                    when key=='Escape'
+                
+                if event.target==search_bar.input_el
+                    null
+                if event.target!=search_bar.input_el
+                    if !isNaN(key)
+                        dict.select_item_i(key-1)
                         event.preventDefault()
-                        search_bar.search_input_el.value=''
-                        search_bar.search_input_el.focus()
-                    when key=='Tab'
+                    if key=='s' || key=='f'
+                        search_bar.clear()
+                        search_bar.focus()
                         event.preventDefault()
-                        sidebar.$el.focus()
+                    if key=='e'
+                        search_bar.focus()
+                        event.preventDefault()
+                    if key=='j'
+                        content.$el.focus()
+                        content.$el.scrollTop+=80
+                        event.preventDefault()
+                    if key=='J'
+                        content.$el.focus()
+                        content.$el.scrollTop=1e5
+                        event.preventDefault()
+                    if key=='k'
+                        content.$el.focus()
+                        content.$el.scrollTop-=80
+                        event.preventDefault()
+                    if key=='K'
+                        content.$el.focus()
+                        content.$el.scrollTop=0
+                        event.preventDefault()
+                    if key=='h'
+                        history.go(-1)
+                        event.preventDefault()
+                    if key=='l'
+                        history.go(1)
+                        event.preventDefault()
+                
+                if key=='Escape'
+                    event.preventDefault()
+                    search_bar.clear()
+                    search_bar.focus()
+                if !event.shiftKey && key=='Tab'
+                    dict.next_item()
+                    event.preventDefault()
+                if event.shiftKey && key=='Tab'
+                    dict.previous_item()
+                    event.preventDefault()
+                            
     
-    
-    
-            # history management
+            # 后退，状态加载
             window.addEventListener 'hashchange',(event)->
                 parts=event.newURL.split('#')
                 if parts?[1]
-                    dict.items=dict.search_results[decodeURI(parts[1])]
+                    parts=parts[1].split(',')
+                    parts[0]=decodeURI(parts[0])
+                    dict.search_text=parts[0]
+                    dict.items=dict.search_results[parts[0]]
                     if dict.items
-                        dict.item=dict.items[0]
+                        dict.item=dict.items[parts[1]]
 </script>
 
 

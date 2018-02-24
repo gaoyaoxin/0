@@ -1,6 +1,6 @@
 <template lang="pug">
     #search-bar
-        el-input#search-input(v-model='search_text' @keyup.native.enter='search(search_text)' ref='search_input' tabindex='0')
+        el-input#search-input(v-model='input_text' @keyup.native.enter='search(input_text)' ref='search_input' tabindex='0')
             el-button(slot='append' icon='el-icon-search')
 </template>
 
@@ -8,20 +8,29 @@
     export default
         data:->
             search_text: ''
+            input_text: ''
+            last_search_text:''
+            input_el:null
         methods:
-            search:(search_text)->
-                if search_text && search_text!=this.last_search_text
-                    history.pushState({search_text},'',"##{search_text}")
-                    if dict.search_results[search_text]
-                        return dict.search_results[search_text]
+            search:(input_text)->
+                if input_text
+                    this.search_text=input_text
+                    history.pushState(null,'',"##{input_text},0")
+                    if dict.search_results[input_text]
+                        return dict.search_results[input_text]
                     ws.send JSON.stringify
                         api: 'search'
                         args:
-                            search_text: search_text
-                    console.log 'search:',search_text
-                this.last_search_text=search_text
-        mounted: ->
-            this.search_input_el=document.querySelector('#search-input')
+                            search_text: input_text
+                    console.log 'search:',input_text
+            clear:->
+                this.input_el.value=''
+            focus:->
+                this.input_el.focus()
+            blur:->
+                this.input_el.blur()
+        mounted:->
+            this.input_el=document.querySelector('#search-input')
         
 </script>
 
