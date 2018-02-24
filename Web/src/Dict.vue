@@ -6,7 +6,9 @@
             el-aside#sidebar(ref='sidebar' tabindex='1' width='250px')
                 #item-list
                     .item(v-for='item in items')
-                        h6.item-index(@click='select_item(item)') {{item.index}}
+                        h6.item-index(@click='select_item(item)')
+                            span.i {{item.i+1<=9?(item.i+1+' '):'&nbsp;'}}
+                            | {{item.index}}
             el-main#content(ref='content' tabindex='2')
                 h1#item-title(v-if='item' v-html='item.title')
                 #item-content(v-if='item' v-html='item.content')
@@ -154,7 +156,7 @@
                 height 600px
                 border-right 1px solid #eeeeee
                 border-left 1px solid #eeeeee
-                padding-left 1em
+                padding-left 0.5rem
                 h6.item-index 
                     font-weight normal
                     font-size 1rem
@@ -162,6 +164,8 @@
                     margin-top unset
                     margin-bottom unset
                     cursor pointer
+                    .i
+                        color:#757575
             #content
                 height 600px
                 line-height 1.5rem
@@ -183,5 +187,5 @@
                     line-height 2rem
                 .egs
                     margin-bottom 1rem
-                    font-size 1.2rem
+                    font-size 1.1rem
 </style>
