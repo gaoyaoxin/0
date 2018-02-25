@@ -11,7 +11,7 @@
                             | {{item.index}}
             el-main#content(ref='content' tabindex='2')
                 h1#item-title(v-if='item' v-html='item.title')
-                #item-content(v-if='item' v-html='item.content')
+                #item-content(v-if='item' v-html="item.content.join('\\n')")
 </template>
     
 
