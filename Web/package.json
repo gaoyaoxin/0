@@ -1,11 +1,11 @@
 {
-  "name": "idict-web",
+  "name": "iDict Web",
   "version": "1.0.0",
-  "description": "My Dictionary",
+  "description": "我的词典",
   "author": "shf19961008@gmail.com",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.coffee",
     "start": "npm run dev",
     "build": "node build/build.js"
   },
