@@ -1,6 +1,6 @@
 <template lang="pug">
     el-container#dict
-        el-header#header
+        el-header#header(height='40px')
             search-bar(ref='search_bar')
         el-container#body
             el-aside#sidebar(ref='sidebar' tabindex='1' width='250px')
@@ -9,9 +9,8 @@
                         h6.item-index(@click='select_item(item)')
                             span.i {{item.i+1<=9?(item.i+1+' '):'&nbsp;'}}
                             | {{item.index}}
-                        img(:src='make_img_src_url(item)')
-            el-main#content(ref='content' tabindex='2')
-                h1#item-title(v-if='item' v-html='item.title')
+            el-main#content(ref='content' v-bind:class='item_type_class' tabindex='2')
+                h1#item-title(v-if='item && item.type=="jp/JTSRZ"' v-html='item.index')
                 #item-content(v-if='item' v-html="item.content.join('\\n')")
 </template>
     
@@ -26,10 +25,15 @@ export default
         sidebar   : null
         content   : null
     components: {SearchBar}
+    computed:
+        item_type_class: ->
+            this.item?.type.replace('/','-')
     methods   :
         select_item  : (item)->
             this.item = item
             history.replaceState(null, '', "##{dict.search_bar.search_text},#{dict.item.i}")
+        set_content_type_class: (item)->
+            item.type.split('/')[0]
         make_img_src_url: (item)->
             'data:image/jpg;base64,'+dict.apple
         # 切换至 上一条目/下一条目
@@ -144,22 +148,32 @@ export default
 
 
 <style lang="stylus">
+    html
+        height 100%
     #dict
-        width 97%
+        width 100%
         margin auto
         #header
             padding unset
             #search-bar
-                margin-top 20px
                 .el-icon-search
                     font-size 1.7rem
+                input
+                    color #000
+                    font-size 1.6rem
+                    border-color #ccc
+                    &:hover
+                        border-color #888
         #body
             #sidebar
+                height 620px
                 min-width 250px
-                height 600px
-                border-right 1px solid #eeeeee
-                border-left 1px solid #eeeeee
+                border-right 1px solid #ccc
+                border-left 1px solid #ccc
+                border-bottom 1px solid #ccc
                 padding-left 0.5rem
+                word-wrap break-word
+                word-break keep-all
                 h6.item-index 
                     font-weight normal
                     font-size 1rem
@@ -170,10 +184,14 @@ export default
                     .i
                         color:#757575
             #content
-                height 600px
+                height 620px
+                border-right 1px solid #ccc
+                border-bottom 1px solid #ccc
+                word-break keep-all
+                word-wrap break-word
+            #content.jp-JTSRZ
                 line-height 1.5rem
                 padding-top 15px
-                border-right 1px solid #eeeeee
                 font-size 1.3rem
                 #item-title
                     line-height 4rem
@@ -181,8 +199,6 @@ export default
                     font-weight normal
                     margin-top 0
                     margin-bottom 15px
-                    word-break keep-all
-                    word-wrap break-word
                 /* 讲谈社日中 */
                 .exp
                     margin-top 0
@@ -193,9 +209,26 @@ export default
                     margin-bottom 1rem
                     font-size 1.1rem
                 /* 牛津高阶OLAD */
+            #content.en-OLAD
+                font-size 1.2rem
                 .fayin
                     display inline
-                
+                .d
+                    font-size 1.3rem
+                    line-height 2.2rem
+                    font-weight bold
+                .cf
+                    color #0070C0
+                    font-weight bold
+                    font-size 1.3rem
+                    line-height 1.8rem
+                    .swung-dash
+                        margin-right .4em
+                .cf[display="block"]
+                    display block
+                .tx
+                    &:before
+                        content ' ／ '
                 img
                     border 0
                     max-width 700px
@@ -209,23 +242,18 @@ export default
                         margin-bottom -2px
                     &.Media
                         clear both
-                
                 .h-g
                     .top-g
                         .h
-                            font-weight bold
-                            color blue
+                            font-size 3rem
+                            display block
                         .vs-g
                             .v
                                 font-weight bold
-                
                 .id-g
                     display inline
-
-                
                 .revout + .id-g, .z + .pv-g
                     display block
-                
                 .revout
                     display block
                     font-weight bold
@@ -238,41 +266,31 @@ export default
                     &:after
                         content "】"
                         color red
-                
-                .ids-g
-                
                 span.arbd1, span.dhb, span.fm, span.unei, .ndv, .cl, .ei, .ndv
                     font-weight bold
                     padding-right 0.2em
-                
                 span.unsyn, span.unfm, .eb
                     font-weight bold
                     padding-right 0.2em
                     text-transform uppercase
                     font-size smaller
                     color #C76E06
-                
                 .ungi, .gi, .g
                     color green
                     padding-right 0.2em
                     font-style italic
-                
                 .label-g
-                    color #004AAC
                     .r
                         color green
                     .chn
                         display inline
                         &:before
                             content ""
-                
                 .dr-g
                     display block
-                
                 .pos
                     text-align left
                     font-weight bold
-                
                 .pos-g
                     .pos
                         display table-cell
@@ -284,117 +302,67 @@ export default
                             content "◙ "
                             color red
                             font-style normal
-                
                 .pos-g .z, .pos-g img, .pos-g .symbols-small_coresym
                     display none
-                
                 .phon-gb, .phon-us
                     color red
-                
                 .z_phon-us
                     color #8f0610
                     font-style italic
                     margin-right .1em
-                
                 .alt
                     font-weight bold
-                
                 .alt[q="also"]
                     display block
-                
                 .z_a
                     font-weight normal
                     padding-right 5px
-                
                 .z
                     font-weight normal
-                
                 .sd
+                    margin-top 2rem
+                    font-size 2rem
+                    line-height 2.5rem
                     display block
                     font-weight bold
                     &:before
                         content "›› "
-                    .chn
-                        font-weight normal
-                
-                .cf
-                    font-weight bold
-                    .swung-dash
-                        margin-right .4em
-                
-                .cf[display="block"]
-                    font-weight bold
-                    display block
-                
                 .n-g
                     display block
-                
-                .z_n
-                    font-weight bold
-                    &:after
-                        content "."
                 .x-g
                     display block
                     padding-left 1em
                     img
                         display none
-                
                 .x
-                    color #04F
                     &:before
                         content "» "
-                
-                .tx
-                    display block
-                    color #039
-                    font-size 90%
-                
                 .sense-g
                     display block
-                
-                .pvs-g .z .revout, .ids-g .revout, .xr-g .revout
-                
                 .pv, .id
                     color blue
-                
-                .pvs-g, .pv-g, .sense-g, .d
-                
-                .pvs-g
-                
                 .xr-g[level="2"]
-                
-                .xr-g
-                
                 .Ref
                     font-weight bold
-                    color #004AAC
-                
                 .block-g
                     display block
-                    margin-bottom 16px
-                
                 .ids-g, .pvs-g
                     display block
-                
                 .id
                     &:before
                         content "◘ "
                         color red
-                
                 .pracpron
                     display none
-                
                 .infl
                     display block
                     display none
                     .inflection
                         margin-right .4em
                         font-weight bold
-                
                 .para
                     display block
                     padding-left 2px
-                
                 .wordbox
                     display block
                     margin-left 18px
@@ -404,7 +372,6 @@ export default
                     border-color #C76E06
                     border-style ridge
                     clear both
-                
                 .word
                     display table-cell
                     margin 0px auto 0px auto
@@ -412,21 +379,17 @@ export default
                     color #FAFAFA
                     font-weight bold
                     text-transform uppercase
-                
                 .wf-g
                     display block
                     .pos-g
                         display inline
                     .pos
                         display inline
-                
                 .wfw
                     display inline
-                
                 .unbox
                     display block
                     padding-left 2px
-                
                 .tab
                     display table-cell
                     background-color #C76E06
@@ -434,37 +397,29 @@ export default
                     font-weight bold
                     text-transform uppercase
                     text-align left
-                
                 .title
                     display block
                     font-weight bold
                     text-transform uppercase
                     font-size small
-                
                 .collsubhead
                     font-weight bold
-                
                 .table
                     display table
                     margin 12px 0 8px 0
-                
                 .tr
                     display table-row
-                
                 .td
                     display table-cell
                     margin-right 10px
-                
                 .th
                     display table-cell
                     color #C76E06
                     font-weight bold
                     text-transform uppercase
-                
                 .althead
                     font-weight bold
                     text-transform uppercase
-                
                 .patterns
                     display block
                     clear both
@@ -479,33 +434,27 @@ export default
                         -webkit-hyphens auto
                         -moz-hyphens auto
                         hyphens auto
-                
                 .help
                     display block
-                
                 .symbols-coresym
                     color green
                     display inline-block
-                
                 .symbols-small_coresym
                     color green
                     display inline-block
                     font-size 70%
                     top -.1em
                     margin-right .15em
-                
                 .symbols-xsym
                     display none
                     color rgb(180, 180, 180)
                     font-size 55%
                     top -.25em
                     margin-right .25em
-                
                 .symbols-xrsym
                     font-style normal
                     color #555555
                     margin-right .25em
-                
                 .symbols-helpsym, .symbols-synsym, .symbols-awlsym, .symbols-oppsym, .symbols-etymsym, .symbols-notesym
                     color rgb(255, 255, 255)
                     background rgb(183, 128, 50)
@@ -517,92 +466,69 @@ export default
                     top -1px
                     line-height 1em
                     border-radius 1px
-                
                 .symbols-oppsym
                     background darkred
-                
                 .symbols-drsym
                     font-style normal
                     font-size 70%
                     color rgb(0, 0, 0)
-                
                 .symbols-para_square
                     color rgb(80, 80, 80)
                     font-size 65%
                     top -.2em
-                
                 .symbols-synsep
                     color rgb(80, 80, 80)
                     font-size 65%
                     top -.2em
-                
                 .symbols-xsep
                     display none
-                
                 .def-g .d .dh, .def-g .d .ndv, .p-g .x-g .x .cl
                     padding-right 0.2em
                     font-weight bold
-                
-                .z_xr
-                
                 .unebi
                     font-weight bold
-                
                 span#wx
                     text-decoration line-through
-                
                 span#unwx
                     text-decoration line-through
-                
                 swung-dash
                     visibility hidden
                     &::after
                         visibility visible
                         content "\007E \0020"
-                
                 .pv-g
                     .swung-dash
                         visibility hidden
                         &::after
                             visibility visible
                             content "\007E \0020"
-                
                 .pv
                     &:before
                         content "◘ "
                         color red
-                
-                .d
-                    .chn
-                        color #FF5000
-                        &:before
-                            content ""
-                
+                .z_n
+                    display none
+                    font-size 1.2rem
+                    font-weight bold
+                    &:after
+                        content "."
                 .def-g
                     padding-left 2px
-                    .chn
-                        &:before
-                            content ""
-                
                 .chn
-                    color #FF5000
-                
+                    color #C60000
+                    font-weight bold
                 .z_ab
                     font-weight normal
                     color green
                     padding-right 0.2em
-                
                 .ab
                     font-weight bold
                     .z
                         font-weight normal
-                
                 .gr, .subject
                     color green
-                
                 .dr
                     font-weight bold
                     color blue
-    
                 
 </style>
