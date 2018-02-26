@@ -10,7 +10,7 @@ import pickle
 with open('./data/講談社日中辞典/items.pkl','wb') as f:
     pickle.dump(items,f)
 with open('./data/講談社日中辞典/items.pkl','rb') as f:
-    items=pickle.load(f)
+    items_jp=pickle.load(f)
 with open('./data/牛津高阶英汉双解词典（第8版）/items.pkl','wb',buffering=2**20*40) as f:
     pickle.dump(items,f)
 with open('./data/牛津高阶英汉双解词典（第8版）/items.pkl','rb',buffering=2**20*40) as f:
@@ -132,3 +132,5 @@ def line_contains(item):
         
 results=filter(line_contains,en_items)
 next(results)
+len(items)
+len(items_jp)

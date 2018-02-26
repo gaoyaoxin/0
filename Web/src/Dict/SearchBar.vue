@@ -17,12 +17,16 @@
                     this.search_text=input_text
                     history.pushState(null,'',"##{input_text},0")
                     if dict.search_results[input_text]
-                        return dict.search_results[input_text]
-                    ws.send JSON.stringify
-                        api: 'search'
-                        args:
-                            search_text: input_text
-                    console.log 'search:',input_text
+                        dict.items=dict.search_results[input_text]
+                        dict.item=dict.items[0]
+                    else
+                        ws.send JSON.stringify
+                            api: 'search'
+                            args:
+                                search_text: input_text
+                        console.log 'search:',input_text
+                    dict.search_bar.blur()
+                    dict.sidebar.$el.focus()
             clear:->
                 this.input_el.value=''
             focus:->

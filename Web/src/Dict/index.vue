@@ -69,8 +69,6 @@ export default
                     dict.search_results[search_bar.search_text] = dict.items = response.retval
                     if dict.items
                         dict.item = dict.items[0]
-                    search_bar.blur()
-                    dict.sidebar.$el.focus()
                 ws.onerror = (event)->
                     console.log 'websocket error'
                     setTimeout websocket_connect, 2000
