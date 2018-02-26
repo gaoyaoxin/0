@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.coffee",
+        "dev": "webpack-dev-server -d --inline --progress --config build/webpack.conf.coffee",
         "start": "npm run dev",
         "build": "node build/build.js"
     },

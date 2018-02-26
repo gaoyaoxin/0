@@ -188,4 +188,6 @@
                 .egs
                     margin-bottom 1rem
                     font-size 1.1rem
+                
+                
 </style>
