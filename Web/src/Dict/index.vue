@@ -9,6 +9,7 @@
                         h6.item-index(@click='select_item(item)')
                             span.i {{item.i+1<=9?(item.i+1+' '):'&nbsp;'}}
                             | {{item.index}}
+                        img(:src='make_img_src_url(item)')
             el-main#content(ref='content' tabindex='2')
                 h1#item-title(v-if='item' v-html='item.title')
                 #item-content(v-if='item' v-html="item.content.join('\\n')")
@@ -29,6 +30,8 @@ export default
         select_item  : (item)->
             this.item = item
             history.replaceState(null, '', "##{dict.search_bar.search_text},#{dict.item.i}")
+        make_img_src_url: (item)->
+            'data:image/jpg;base64,'+dict.apple
         # 切换至 上一条目/下一条目
         next_item    : ->
             this.sidebar.$el.focus()
@@ -39,7 +42,6 @@ export default
         select_item_i: (i)->
             this.sidebar.$el.focus()
             this.select_item(dict.items[i]) if 0<=i<dict.items.length
-    
     mounted  : ->
         window.dict = this
         sidebar     = this.sidebar    = this.$refs.sidebar
@@ -58,6 +60,7 @@ export default
                 ws.onmessage = (event)->
                     response = JSON.parse(event.data)
                     console.log response
+                    dict.apple=response.apple
                     response.retval.forEach (x, i)-> x.i = i # 加入 index
                     dict.search_results[search_bar.search_text] = dict.items = response.retval
                     if dict.items

@@ -1,31 +1,32 @@
 import re
 
 # import mdict.mdx src file
-with open('D:/講談社日中 mdx src.txt','r',encoding='utf-8') as f:
+with open('./data/牛津高阶英汉双解词典（第8版）/items.txt','r',encoding='utf-8',buffering=2**20*40) as f:
     text=f.read()
-with open('D:/dict-out-0.1.txt','r',encoding='utf-8') as f:
-    text=f.read()
-with open('D:/dict-model.txt','r',encoding='utf-8') as f:
-    text=f.read()
-
+text[:1000]
+text[-2000:].split('</>\n')
 def parse_item(item:str):
     lines=item.split('\n')
-    if len(lines)<3: print(lines)
-    item={
+    if len(lines)<2: print(lines)
+    return {
         'index':lines[0],
-        'title':lines[1],
-        'content':lines[2:]
+        'content':lines[1:]
     }
-    return item
 items=[parse_item(item) for item in text.split('</>\n')]
+len(items)
+items[-1]['content'][-1]=''
 
 
 
 # save/load items
 import pickle
-with open('./Data/jp-dict-items.pkl','wb') as f:
+with open('./data/講談社日中辞典/items.pkl','wb') as f:
     pickle.dump(items,f)
-with open('./Data/jp-dict-items.pkl','rb') as f:
+with open('./data/講談社日中辞典/items.pkl','rb') as f:
+    items=pickle.load(f)
+with open('./data/牛津高阶英汉双解词典（第8版）/items.pkl','wb',buffering=2**20*40) as f:
+    pickle.dump(items,f)
+with open('./data/牛津高阶英汉双解词典（第8版）/items.pkl','rb',buffering=2**20*40) as f:
     items=pickle.load(f)
 
 
@@ -41,159 +42,55 @@ for item in items:
     content2lines(item)
 
 
-# 提取单词，删去拼音，修改格式
-s='回礼 huílǐ；回赠礼品 huízèng lǐpǐn．（物）回礼 huílǐ．<br>'
-for item in items:
-    status='notyet' # notyet/first/second | notyet->first, notyet->notyet, first->second, second->first, second->notyet
-    to_remove=[]
-    content=item['content']
-    for i,s in enumerate(content):
-        m=re.match('<span class="word">(.*?)</span><br>',s)
-        if status=='notyet':
-            if m:
-                content[i]=f'<div class="words"><p class="word"><span class="word-jp">{m[1]}</span>／'
-                status='first'
-        elif status=='first':
-            to_remove.append(s)
-            cnt=len(re.findall('．',s))
-            if cnt>1:
-                s=re.sub('．','；',s,cnt-1)
-            content[i-1]+=f'''<span class="word-cn">{'、'.join(p.split(' ')[0] for p in s[:-5].split('；'))}</span></p>'''
-            status='second'
-        elif status=='second':
-            if m:
-                content[i]=f'<p class="word"><span class="word-jp">{m[1]}</span>／'
-                status='first'
-            else:
-                content[i-2]+=f'</div>'
-                status='notyet'
-    item['content']=[x for x in item['content'] if x not in to_remove]
-    
-re.match('<span class="word">(.*?)</span><br>','<span class="word">外交━━</span><br>')[1]
-'、'.join(p.split(' ')[0] for p in '外勤 wàiqín；跑街 pǎojiē．<br>'[:-5].split('；'))+'外勤 wàiqín；跑街 pǎojiē．<br>'[-5:-4]
-
-
-
-# 中文例句翻译去拼音
-def eg_rm_py(m):
-    return '<span class="eg-cn">'+'／'.join(p.split(' ')[0] for p in m[1].split('／'))+'</span>'
-
-for item in items:
-    item['content']=[re.sub('<span class="eg-cn">(.*?)</span>',eg_rm_py,s) for s in item['content']]
-    
-s='<div class=“egs"><span class="eg-jp">～いご飯</span>／<span class="eg-cn">热饭 rèfàn／热乎乎的米饭 rèhūhū de mǐfàn．</span><br>'
-s='<span class="eg-jp">～半分の気持ちでボランティア活動に参加する</span>／<span class="eg-cn">带着一半去玩儿的心情参加志愿者活动 dàizhe yíbàn qù wánr de xīnqíng cānjiā zhìyuànzhě huódong．</span><br>'
-re.sub('<span class="eg-cn">(.*?)</span>',eg_rm_py,s)
-item=items[0]
-
-
-
-# 中文解释去拼音
-def exp_rm_py(m):
-    g4=m.group(4)
-    cnt=len(re.findall('．',g4))
-    if cnt>1:
-        g4=re.sub('．','；',g4,cnt-1)
-    if g4.find('；')==-1 and len(re.findall('？',g4))>1: print(g4)
-    return '<p class="exp">'+m.group(2)+m.group(3)+' '+'、'.join(p.split(' ')[0] for p in g4.split('；'))+'</p>'
-
-for item in items:
-    if len(item['content'])>1:
-        contents=item['content']
-        if contents[0].startswith('<'):
-            continue
-        if not contents[0].startswith('①'):
-            contents[0]='① '+contents[0]
-        for i,s in enumerate(contents):
-            contents[i]=re.sub('(([①-⑳]|<b>[2-3][0-9]</b> )(.*?)? )(.*)',exp_rm_py,s)
-
-s='①（遊ぶこと） 玩儿 wánr．（気ばらし）消遣 xiāoqiǎn．（遊戯・ゲーム）游戏 yóuxì．'
-s='<b>22</b> （脱ぐ・はずす） 摘下 zhāi//xia；摘掉 zhāi//diào；脱 tuō．'
-s='<b>37</b> （遊びや競技などを行う） 做（游戏或体育比赛等）动作 zuò （yóuxì huò tǐyù bǐsài děng） dòngzuò；玩 wán．'
-s='①（内から外へ行く・出発する） 出 chū；出去 chū//qu；出发 chūfā．'
-s='①（サングラス） 有色眼镜 yǒusè yǎnjìng；墨镜 mòjìng．<br>'
-re.sub('(([①-⑳]|<b>[2-3][0-9]</b> )(.*?)? )(.*)',exp_rm_py,s)
-re.match('(([①-⑳]|<b>[2-3][0-9]</b> )(.*?)? )(.*)',s).groups()
-# re.match('(([①-⑳]|<b>[2-3][0-9]</b> )(.*?)? )(.*)',s).group(3)
-
-
-
-# export
+# export mdict src.txt
 items_str=''.join(['\n'.join([item['index'],item['title']]+item['content'][:-1])+'\n</>\n' for item in items])
 items_str=items_str[:-4]+'</>'
 with open('D:/dict-out.txt','w',encoding='utf-8',buffering=30*1024*1024) as f:
     f.write(items_str)
-
 items_str[-10:]
 item=items[0]
-
-
-
-# add id for items
-for i,item in enumerate(items):
-    item['id']=i
-    
-
-
-# シソーラス 拼音消去 synonym
-'<b>［シソーラス］</b>'
-s='【暖】nuǎn （気候や環境が）あたたかい．'
-s='【其间】qíjiān<br>'
-s='【之间】zhī jiān （両者の間を表す）…の間．'
-s='【空】kòng 空である．あいている．使われていない．'
-for item in items:
-    for i,s in enumerate(item['content']):
-        m=re.match('^(【.*】).*( |<br>)(.*)',s)
-        if m:
-            if m[3].endswith('．'):
-                m3=m[3][:-1]
-            else:
-                m3=m[3]
-            m3=m3.replace('．','、')
-            item['content'][i]=f'<p class="synonym">{m[1]} {m3}</p>'
-s[:-1]
-item
-
-
-
-# class="item-title"
-for item in items:
-    item['title']=item['title'].replace('<h1 class="item-title">','').replace('</h1>','')
-items[50]['title']
-s='abcd'
-s.replace('ab','cd')
-
-
-# ［シソーラス］中日例句互换，去掉句号
-for item in items:
-    synonym=False
-    for i,s in enumerate(item['content']):
-        if re.match('.*［シソーラス］.*',s):
-            synonym=True
-        if synonym:
-            item['content'][i]=re.sub('(.*)．</span>／<span class="eg-cn">(.*)',r'\1</span>／<span class="eg-cn">\2',s)
-s='<span class="eg-jp">もろ手をあげて賛成する．</span>／<span class="eg-cn">～双手赞成</span><br>'
-s='<div class="egs"><span class="eg-jp">杯をあげる．</span>／<span class="eg-cn">～杯</span><br>'
-re.sub('(.*)．</span>／<span class="eg-cn">(.*)',r'\1</span>／<span class="eg-cn">\2',s)
-item
 
 
 
 def search(search_text:str)->list:
     pattern_reg=re.compile(search_text)
     def resolve(item):
-        if item['title'].startswith('@@@LINK='):
-            real_title=item['title'].replace('@@@LINK=','')
-            for x in items:
-                if x['title']==real_title:
-                    return x
-        else:
-            return item
+        # if item['title'].startswith('@@@LINK='):
+        #     real_title=item['title'].replace('@@@LINK=','')
+        #     for x in items:
+        #         if x['title']==real_title:
+        #             return x
+        # else:
+        return item
     result=[item for item in items if pattern_reg.match(item['index'])][:17]
     return [resolve(item) for item in result]
 results=search('あげる【上げる・挙げる・揚げる】')
 item=results[0]
+item['title']
 print(item['content'])
-items[500]
-re.sub('xxx','yyy','zzz')
+items[-3]
+
+
+items[:3]
+
+special_cases=[item for item in items if not item['content'][0].startswith('<link rel="stylesheet" type="text/css" href="O8C.css">')]
+item['content'][0]
+s='<link rel="stylesheet" type="text/css" href="O8C.css"><span class="id">$100, £50, etc. a ˈthrow</span>'
+s='<link rel="stylesheet" type="text/css" href="O8C.css">'
+for item in items:
+    item['content'][0]=re.sub('<link rel="stylesheet" type="text/css" href="O8C.css">(.*)',r'\1',item['content'][0])
+    
+import os
+import dict as d
+os.listdir()
+os.getcwd()
+getattr(os,'getcwd')
+
+import bson
+bson.dumps({"A":[1,2,3,4,5,"6", "7", {"C":"DS"}]})
+
+import base64
+os.getcwd()
+with open("./data/apple.jpg", "rb") as image_file:
+    img_base64 = base64.b64encode(image_file.read())
 
