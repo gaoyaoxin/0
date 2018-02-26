@@ -34,7 +34,7 @@ webpack_config =
         loader : 'vue-loader'
         options:
             loaders           :
-                css: ['vue-style-loader', {loader: 'css-loader', options: {sourceMap: true}}]
+                css: ['vue-style-loader', {loader: 'css-loader', options: {sourceMap: true}}, {loader: 'stylus-loader'}]
             cssSourceMap      : true
             # If you have problems debugging vue-files in devtools, set this to false - it *may* help
             # https://vue-loader.vuejs.org/en/options.html#cachebusting
@@ -54,10 +54,15 @@ webpack_config =
             pretty: true
     ,
         test   : /\.css$/
-        use    : ['vue-style-loader', {loader: 'css-loader', options: {sourceMap: true}}]
+        use    : [
+            'vue-style-loader'
+            {loader: 'css-loader', options: {sourceMap: true}}]
     ,
         test   : /\.styl$/
-        use    : ['vue-style-loader', {loader: 'css-loader', options: {sourceMap: true}}]
+        use    : [
+            'vue-style-loader'
+            {loader: 'css-loader', options: {sourceMap: true}}
+            {loader: 'stylus-loader'}]
     ,
         test   : /\.(png|jpe?g|gif|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(\?.*)?$/
         loader : 'url-loader'
