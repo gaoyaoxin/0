@@ -1,17 +1,11 @@
 from flask import Flask
-from flask_json import FlaskJSON,JsonError,json_response,as_json
 from flask_sockets import Sockets
 import json
-import base64
 
 import dict as d
 
 app=Flask(__name__)
 sockets=Sockets(app)
-# json=FlaskJSON(app)
-
-with open("data/apple.jpg", "rb") as image_file:
-    img_base64_str = base64.b64encode(image_file.read()).decode('utf-8')
 
 @app.route('/')
 def index():
@@ -29,7 +23,6 @@ def websocket_dispatch(ws):
             ws.send(json.dumps({
                 'status':200,
                 'retval':retval,
-                'apple': img_base64_str
             }))
 
 

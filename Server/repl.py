@@ -1,22 +1,9 @@
 import re
 
-# import mdict.mdx src file
-with open('./data/牛津高阶英汉双解词典（第8版）/items.txt','r',encoding='utf-8',buffering=2**20*40) as f:
-    text=f.read()
-text[:1000]
-text[-2000:].split('</>\n')
-def parse_item(item:str):
-    lines=item.split('\n')
-    if len(lines)<2: print(lines)
-    return {
-        'index':lines[0],
-        'content':lines[1:]
-    }
-items=[parse_item(item) for item in text.split('</>\n')]
-len(items)
-items[-1]['content'][-1]=''
-
-
+items = []
+jp_items = []
+en_items = []
+item = items[0]
 
 # save/load items
 import pickle
@@ -29,49 +16,29 @@ with open('./data/牛津高阶英汉双解词典（第8版）/items.pkl','wb',bu
 with open('./data/牛津高阶英汉双解词典（第8版）/items.pkl','rb',buffering=2**20*40) as f:
     items=pickle.load(f)
 
-
-# content line <-> html
-def content2html(item):
-    item['content']='\n'.join(item['content'])
-for item in items:
-    content2html(item)
-    
-def content2lines(item):
-    item['content']=item['content'].split('\n')
-for item in items:
-    content2lines(item)
-
-
-# export mdict src.txt
-items_str=''.join(['\n'.join([item['index'],item['title']]+item['content'][:-1])+'\n</>\n' for item in items])
-items_str=items_str[:-4]+'</>'
-with open('D:/dict-out.txt','w',encoding='utf-8',buffering=30*1024*1024) as f:
-    f.write(items_str)
-items_str[-10:]
-item=items[0]
-
-
-
 def search(search_text:str)->list:
-    pattern_reg=re.compile(search_text)
+    if re.match(r'[0-9a-zA-Z\.\* ]*',search_text):
+        return search_en(search_text)
+    else:
+        return search_jp(search_text)
+
+def search_jp(search_text:str)->list:
+    pattern=re.compile(search_text)
     def resolve(item):
-        # if item['title'].startswith('@@@LINK='):
-        #     real_title=item['title'].replace('@@@LINK=','')
-        #     for x in items:
-        #         if x['title']==real_title:
-        #             return x
-        # else:
-        return item
-    result=[item for item in items if pattern_reg.match(item['index'])][:17]
+        if item['content'][0].startswith('@@@LINK='):
+            real_title=item['content'][0].replace('@@@LINK=','')
+            for x in jp_items:
+                if item['content'][0]==real_title:
+                    return x
+        else:
+            return item
+    result=[item for item in jp_items if pattern.match(item['index'])][:20]
     return [resolve(item) for item in result]
-results=search('あげる【上げる・挙げる・揚げる】')
-item=results[0]
-item['title']
-print(item['content'])
-items[-3]
 
+def search_en(search_text:str)->list:
+    pattern=re.compile(search_text)
+    return [item for item in en_items if pattern.match(item['index'])][:20]
 
-items[:3]
 
 special_cases=[item for item in items if not item['content'][0].startswith('<link rel="stylesheet" type="text/css" href="O8C.css">')]
 item['content'][0]
@@ -80,17 +47,51 @@ s='<link rel="stylesheet" type="text/css" href="O8C.css">'
 for item in items:
     item['content'][0]=re.sub('<link rel="stylesheet" type="text/css" href="O8C.css">(.*)',r'\1',item['content'][0])
     
+
 import os
-import dict as d
 os.listdir()
 os.getcwd()
-getattr(os,'getcwd')
 
-import bson
-bson.dumps({"A":[1,2,3,4,5,"6", "7", {"C":"DS"}]})
 
 import base64
 os.getcwd()
 with open("./data/apple.jpg", "rb") as image_file:
     img_base64 = base64.b64encode(image_file.read())
 
+
+items=en_items
+
+item=search_en('apple')[0]
+item=search_en('enumerate')[0]
+
+for item in items:
+    for i,s in enumerate(item['content']):
+        item['content'][i]=re.sub('','',s)
+
+s='        <img src="/pic/fruit_comp.jpg" alt="/pic/fruit_comp.jpg" height="540" width="720" style="display:none;" onclick="this.style.display=&apos;none&apos;;this.nextSibling.nextSibling.style.display=&apos;block&apos;;"/>'
+
+
+def embed_base64_img(m):
+    with open(f'data/牛津高阶英汉双解词典（第8版）/data/{m.group(1)}/{m.group(2)}.{m.group(3)}','rb') as f:
+        base64_str=base64.b64encode(f.read()).decode('utf-8')
+    return f'data:image/{m.group(3)};base64,{base64_str}'
+re.sub(r'(?<=<img src=")/(symbols|pic|thumb|uk|us)/(.+?)\.(.+?)(?=")', embed_base64_img, s)
+
+s='            <a href="entry://Adam&apos;s apple">Adam\'s apple</a>'
+
+stop=False
+for item in items:
+    for i,s in enumerate(item['content']):
+        re.sub(r'(?<=src=")u([k|s])_pron\.png(?=")', r'/symbols/u\1_pron.png', s)
+    if stop: break
+    
+for item in items:
+    for i,s in enumerate(item['content']):
+        item['content'][i]=re.sub(r'(?<=src=")u([k|s])_pron\.png(?=")', r'/symbols/u\1_pron.png', s)
+
+
+s='<img src="/symbols/xsym.png"/>'
+s='src="uk_pron.png"'
+
+s='        <a type="sound" topic="a/app/apple/apple_pie_1_gb_1.spx" resource="uk_pron" backup-class="Media" class="fayin" href="sound://uk/apple_pie_1_gb_1.spx"><img src="uk_pron.png" class="fayin"/></a>'
+search('apple')
