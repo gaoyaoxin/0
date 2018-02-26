@@ -1,7 +1,7 @@
 ﻿path = require('path')
 utils = require('./utils')
 webpack = require('webpack')
-config = require('./base.env')
+config = require('./build.env')
 merge = require('webpack-merge')
 baseWebpackConfig = require('./webpack.base.conf')
 CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -10,7 +10,7 @@ ExtractTextPlugin = require('extract-text-webpack-plugin')
 OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
-env = require('../cfg/prod.env')
+env = require('./build.env')
 
 webpackConfig = merge(baseWebpackConfig,
     module: 
