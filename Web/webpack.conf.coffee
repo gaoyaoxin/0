@@ -7,15 +7,11 @@ HtmlWebpackPlugin    = require('html-webpack-plugin')
 FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 
-resolve = (dir) ->
-    path.join __dirname, '..', dir
-
 webpack_config =
-    context: path.resolve(__dirname, '../')
     entry: 
         index: './src/index.coffee'
     output:
-        path      : path.resolve(__dirname, '../dist')
+        path      : __dirname+'/dist'
         filename  : 'bundle.js'
         publicPath: '/'
         pathinfo  : true
@@ -28,7 +24,7 @@ webpack_config =
         ]
         alias:
             'vue$': 'vue/dist/vue.esm.js'
-            '@': resolve('src')
+            '@': 'src'
     module: rules: [
         test   : /\.vue$/
         loader : 'vue-loader'
@@ -75,7 +71,7 @@ webpack_config =
         loader : 'file-loader'
         options:
             name      : '[path][name].[ext]'
-            context   : resolve 'src'
+            context   : 'src'
             # mimetype: extname
     ,
         test   : /\.txt$/

@@ -10,13 +10,14 @@
                             span.i {{item.i+1<=9?(item.i+1+' '):'&nbsp;'}}
                             | {{item.index}}
             el-main#content(ref='content' v-bind:class='item_type_class' tabindex='2')
-                h1#item-title(v-if='item && item.type=="jp/JTSRZ"' v-html='item.index')
-                #item-content(v-if='item' v-html="item.content.join('\\n')")
+                h1#item-title(v-if='item && item.type=="jp/JTS"' v-html='item.index')
+                #item-content(v-if='item' v-html="render_item_content(item)")
 </template>
     
 
 <script lang="coffee">
 import SearchBar from './SearchBar'
+import cheerio from 'cheerio'
 export default
     data      : ->
         items     : []
@@ -32,10 +33,20 @@ export default
         select_item  : (item)->
             this.item = item
             history.replaceState(null, '', "##{dict.search_bar.search_text},#{dict.item.i}")
+        render_item_content: (item)->
+            item.$ = $ = cheerio.load(item.content.join('\n'))
+            $('img').each (i,e)=>
+                $(e).attr 'src', (i,src) =>
+                    "data:image/#{src.split('.').pop()};base64,#{item.assets[src[1..-1]]}"
+            $('a[type="sound"]').each (i,e)=>
+                $(e).replaceWith("""
+                <audio controls
+                    src="data:audio/wav;base64,#{item.assets[$(e).attr('href').replace('sound://','')]}">
+                </audio>
+                """)
+            $.html()
         set_content_type_class: (item)->
             item.type.split('/')[0]
-        make_img_src_url: (item)->
-            'data:image/jpg;base64,'+dict.apple
         # 切换至 上一条目/下一条目
         next_item    : ->
             this.sidebar.$el.focus()
@@ -64,17 +75,16 @@ export default
                 ws.onmessage = (event)->
                     response = JSON.parse(event.data)
                     console.log response
-                    dict.apple=response.apple
                     response.retval.forEach (x, i)-> x.i = i # 加入 index
                     dict.search_results[search_bar.search_text] = dict.items = response.retval
                     if dict.items
                         dict.item = dict.items[0]
                 ws.onerror = (event)->
                     console.log 'websocket error'
-                    setTimeout websocket_connect, 2000
+                    setTimeout websocket_connect, 5000
                 ws.onclose = (event)->
                     console.log 'websocket closed'
-                    setTimeout websocket_connect, 2000
+                    setTimeout websocket_connect, 5000
             else
                 console.error 'disconnected with the server'
         websocket_connect()
@@ -187,7 +197,7 @@ export default
                 border-bottom 1px solid #ccc
                 word-break keep-all
                 word-wrap break-word
-            #content.jp-JTSRZ
+            #content.jp-JTS
                 line-height 1.5rem
                 padding-top 15px
                 font-size 1.3rem
@@ -206,8 +216,8 @@ export default
                 .egs
                     margin-bottom 1rem
                     font-size 1.1rem
-                /* 牛津高阶OLAD */
-            #content.en-OLAD
+                /* 牛津高阶OALD */
+            #content.en-OALD
                 font-size 1.2rem
                 .fayin
                     display inline
@@ -300,8 +310,6 @@ export default
                             content "◙ "
                             color red
                             font-style normal
-                .pos-g .z, .pos-g img, .pos-g .symbols-small_coresym
-                    display none
                 .phon-gb, .phon-us
                     color red
                 .z_phon-us
@@ -330,8 +338,6 @@ export default
                 .x-g
                     display block
                     padding-left 1em
-                    img
-                        display none
                 .x
                     &:before
                         content "» "
@@ -350,11 +356,8 @@ export default
                     &:before
                         content "◘ "
                         color red
-                .pracpron
-                    display none
                 .infl
                     display block
-                    display none
                     .inflection
                         margin-right .4em
                         font-weight bold
@@ -444,7 +447,6 @@ export default
                     top -.1em
                     margin-right .15em
                 .symbols-xsym
-                    display none
                     color rgb(180, 180, 180)
                     font-size 55%
                     top -.25em
@@ -478,8 +480,6 @@ export default
                     color rgb(80, 80, 80)
                     font-size 65%
                     top -.2em
-                .symbols-xsep
-                    display none
                 .def-g .d .dh, .def-g .d .ndv, .p-g .x-g .x .cl
                     padding-right 0.2em
                     font-weight bold
@@ -505,7 +505,6 @@ export default
                         content "◘ "
                         color red
                 .z_n
-                    display none
                     font-size 1.2rem
                     font-weight bold
                     &:after

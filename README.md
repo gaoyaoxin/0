@@ -2,7 +2,7 @@
 
 一个简洁、智能、美观的词典。
 
-前端基于Vue、后端基于Flask，使用Websocket通信，数据来源mdict词典文件。
+前端基于 Vue、后端基于 Flask，使用 Websocket 通信。数据来自 mdict 词典文件。
 
 ## 预览
 

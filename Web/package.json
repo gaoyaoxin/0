@@ -1,12 +1,13 @@
 {
     "scripts": {
-        "dev": "webpack-dev-server -d --inline --progress --config build/webpack.conf.coffee",
+        "dev": "webpack-dev-server -d --inline --progress --config webpack.conf.coffee",
         "start": "npm run dev",
         "build": "node build/build.js"
     },
     "dependencies": {
         "ajv": "^6.1.1",
         "babel-polyfill": "^6.26.0",
+        "cheerio": "^1.0.0-rc.2",
         "coffee": "^4.1.0",
         "coffee-loader": "^0.9.0",
         "coffeescript": "^2.2.1",
