@@ -35,15 +35,16 @@ export default
             history.replaceState(null, '', "##{dict.search_bar.search_text},#{dict.item.i}")
         render_item_content: (item)->
             item.$ = $ = cheerio.load(item.content.join('\n'))
-            $('img').each (i,e)=>
-                $(e).attr 'src', (i,src) =>
-                    "data:image/#{src.split('.').pop()};base64,#{item.assets[src[1..-1]]}"
-            $('a[type="sound"]').each (i,e)=>
-                $(e).replaceWith("""
-                <audio controls
-                    src="data:audio/wav;base64,#{item.assets[$(e).attr('href').replace('sound://','')]}">
-                </audio>
-                """)
+            if item.type=='en/OALD'
+                $('img').each (i,e)=>
+                    $(e).attr 'src', (i,src) =>
+                        "data:image/#{src.split('.').pop()};base64,#{item.assets[src[1..-1]]}"
+                $('a[type="sound"]').each (i,e)=>
+                    $(e).replaceWith("""
+                    <audio controls
+                        src="data:audio/wav;base64,#{item.assets[$(e).attr('href').replace('sound://','')]}">
+                    </audio>
+                    """)
             $.html()
         set_content_type_class: (item)->
             item.type.split('/')[0]
