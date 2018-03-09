@@ -39,11 +39,19 @@ export default
                 $('img').each (i,e)=>
                     $(e).attr 'src', (i,src) =>
                         "data:image/#{src.split('.').pop()};base64,#{item.assets[src[1..-1]]}"
+                # 去除英音
+                $('[resource="phon-gb"]').remove()
+                $('.phon-gb').remove()
+                $('[resource="uk_pron"]').remove()
+                $('.chn').each (i,e)->
+                    $(e).text (i,text)->
+                        text.replace(/╱/g,'/').replace(/；/g,'、')
                 $('a[type="sound"]').each (i,e)=>
                     $(e).replaceWith("""
-                    <audio controls
+                    <audio id="audio-#{i}"
                         src="data:audio/wav;base64,#{item.assets[$(e).attr('href').replace('sound://','')]}">
                     </audio>
+                    <span onclick="document.querySelector('#audio-#{i}').play()" style="cursor:pointer">▶</span>
                     """)
             $.html()
         set_content_type_class: (item)->
@@ -97,7 +105,7 @@ export default
             
             if event.target==search_bar.input_el
                 null
-            if event.target!=search_bar.input_el
+            if event.target!=search_bar.input_el && !event.getModifierState('Control')
                 if !isNaN(key)
                     dict.select_item_i(key-1)
                     event.preventDefault()
@@ -219,25 +227,35 @@ export default
                     font-size 1.1rem
                 /* 牛津高阶OALD */
             #content.en-OALD
-                font-size 1.2rem
+                .gl
+                    &:after
+                        content ' '
+                a
+                    text-decoration none
+                .pos
+                    display block
+                    font-size 2rem
+                    color #d11000
+                    margin-top 1rem
                 .fayin
                     display inline
-                .d
-                    font-size 1.3rem
-                    line-height 2.2rem
+                .sd
+                    display block
                     font-weight bold
+                    margin-top 1rem
                 .cf
                     color #0070C0
-                    font-weight bold
-                    font-size 1.3rem
-                    line-height 1.8rem
                     .swung-dash
                         margin-right .4em
                 .cf[display="block"]
                     display block
+                .pv, .id
+                    display block
+                    color #0070C0
+                    font-weight bold
                 .tx
                     &:before
-                        content ' ／ '
+                        content '　'
                 img
                     border 0
                     max-width 700px
@@ -251,35 +269,28 @@ export default
                         margin-bottom -2px
                     &.Media
                         clear both
+                .z
+                    display none
                 .h-g
                     .top-g
                         .h
                             font-size 3rem
                             display block
-                        .vs-g
-                            .v
-                                font-weight bold
                 .id-g
                     display inline
                 .revout + .id-g, .z + .pv-g
                     display block
                 .revout
-                    display block
                     font-weight bold
-                    color red
-                    margin-top 15px
-                    text-align left
+                    margin-top 1rem
+                    display block
                     &:before
                         content "【"
-                        color red
                     &:after
                         content "】"
-                        color red
                 span.arbd1, span.dhb, span.fm, span.unei, .ndv, .cl, .ei, .ndv
-                    font-weight bold
                     padding-right 0.2em
                 span.unsyn, span.unfm, .eb
-                    font-weight bold
                     padding-right 0.2em
                     text-transform uppercase
                     font-size smaller
@@ -289,79 +300,40 @@ export default
                     padding-right 0.2em
                     font-style italic
                 .label-g
-                    .r
-                        color green
+                    color green
                     .chn
                         display inline
                         &:before
                             content ""
                 .dr-g
                     display block
-                .pos
-                    text-align left
-                    font-weight bold
-                .pos-g
-                    .pos
-                        display table-cell
-                        margin 0px auto 0px auto
-                        color darkRed
-                        font-style italic
-                        display block
-                        &:before
-                            content "◙ "
-                            color red
-                            font-style normal
                 .phon-gb, .phon-us
                     color red
                 .z_phon-us
-                    color #8f0610
-                    font-style italic
-                    margin-right .1em
-                .alt
-                    font-weight bold
+                    display none
                 .alt[q="also"]
                     display block
-                .z_a
-                    font-weight normal
-                    padding-right 5px
-                .z
-                    font-weight normal
-                .sd
-                    margin-top 2rem
-                    font-size 2rem
-                    line-height 2.5rem
-                    display block
-                    font-weight bold
-                    &:before
-                        content "›› "
                 .n-g
                     display block
                 .x-g
                     display block
-                    padding-left 1em
-                .x
-                    &:before
-                        content "» "
+                    margin-left 2em
+                .n-g .xr-g
+                    margin-left 2em
+                .xr-g
+                    display block
+                .z_ei-g
+                    display none
                 .sense-g
                     display block
-                .pv, .id
-                    color blue
-                .xr-g[level="2"]
-                .Ref
-                    font-weight bold
                 .block-g
                     display block
                 .ids-g, .pvs-g
                     display block
-                .id
-                    &:before
-                        content "◘ "
-                        color red
                 .infl
                     display block
                     .inflection
                         margin-right .4em
-                        font-weight bold
                 .para
                     display block
                     padding-left 2px
@@ -379,14 +351,7 @@ export default
                     margin 0px auto 0px auto
                     background-color #C76E06
                     color #FAFAFA
-                    font-weight bold
                     text-transform uppercase
-                .wf-g
-                    display block
-                    .pos-g
-                        display inline
-                    .pos
-                        display inline
                 .wfw
                     display inline
                 .unbox
@@ -396,16 +361,13 @@ export default
                     display table-cell
                     background-color #C76E06
                     color #FAFAFA
-                    font-weight bold
                     text-transform uppercase
                     text-align left
                 .title
                     display block
-                    font-weight bold
                     text-transform uppercase
                     font-size small
                 .collsubhead
-                    font-weight bold
                 .table
                     display table
                     margin 12px 0 8px 0
@@ -417,10 +379,8 @@ export default
                 .th
                     display table-cell
                     color #C76E06
-                    font-weight bold
                     text-transform uppercase
                 .althead
-                    font-weight bold
                     text-transform uppercase
                 .patterns
                     display block
@@ -428,7 +388,6 @@ export default
                     .althead
                         display table-cell
                         margin 0px auto 0px auto
-                        font-weight bold
                         text-transform uppercase
                     .para
                         -ms-word-break break-all
@@ -448,10 +407,7 @@ export default
                     top -.1em
                     margin-right .15em
                 .symbols-xsym
-                    color rgb(180, 180, 180)
-                    font-size 55%
-                    top -.25em
-                    margin-right .25em
+                    display none
                 .symbols-xrsym
                     font-style normal
                     color #555555
@@ -476,16 +432,9 @@ export default
                 .symbols-para_square
                     color rgb(80, 80, 80)
                     font-size 65%
-                    top -.2em
                 .symbols-synsep
                     color rgb(80, 80, 80)
                     font-size 65%
-                    top -.2em
-                .def-g .d .dh, .def-g .d .ndv, .p-g .x-g .x .cl
-                    padding-right 0.2em
-                    font-weight bold
-                .unebi
-                    font-weight bold
                 span#wx
                     text-decoration line-through
                 span#unwx
@@ -501,32 +450,22 @@ export default
                         &::after
                             visibility visible
                             content "\007E \0020"
-                .pv
-                    &:before
-                        content "◘ "
-                        color red
                 .z_n
-                    font-size 1.2rem
-                    font-weight bold
-                    &:after
-                        content "."
+                    display none
+                .symbols-small_coresym
+                    display none
                 .def-g
                     padding-left 2px
-                .chn
-                    color #C60000
-                    font-weight bold
                 .z_ab
                     font-weight normal
                     color green
                     padding-right 0.2em
                 .ab
-                    font-weight bold
                     .z
                         font-weight normal
                 .gr, .subject
                     color green
                 .dr
-                    font-weight bold
                     color blue
                 
 </style>

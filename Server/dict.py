@@ -32,8 +32,8 @@ def search(search_text:str, is_load_assets=True)->list:
                     if asset_key not in assets.keys():
                         with open(f'data/OALD/data/{asset_key}', 'rb') as f:
                             assets[asset_key] = base64.b64encode(f.read()).decode('utf-8')
-                # 加载、编解码发音，加入 assets
-                m = re.match(r'.*"sound://(.*?)"',s)
+                # 加载、编解码发音（只要美音），加入 assets
+                m = re.match(r'.*"sound://(us/.*?)"',s)
                 if m:
                     asset_key = m.group(1)
                     if asset_key not in assets.keys():
