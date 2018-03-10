@@ -11,7 +11,7 @@
                             | {{item.index}}
             el-main#content(ref='content' v-bind:class='item_type_class' tabindex='2')
                 h1#item-title(v-if='item && item.type=="jp/JTS"' v-html='item.index')
-                #item-content(v-if='item' v-html="render_item_content(item)")
+                #item-content(v-if='item' v-html="render_item_content(item)", @click='jump($event)')
 </template>
     
 
@@ -66,6 +66,11 @@ export default
         select_item_i: (i)->
             this.sidebar.$el.focus()
             this.select_item(dict.items[i]) if 0<=i<dict.items.length
+        jump: (event)->
+            e=event.target
+            if e.href?.startsWith('entry://')
+                dict.search_bar.input_text=e.href[8..]
+                dict.search_bar.search(e.href[8..])
     mounted  : ->
         window.dict = this
         sidebar     = this.sidebar    = this.$refs.sidebar
@@ -232,6 +237,8 @@ export default
                         content ' '
                 a
                     text-decoration none
+                .top-g .z
+                    display none
                 .pos
                     display block
                     font-size 2rem
@@ -269,8 +276,6 @@ export default
                         margin-bottom -2px
                     &.Media
                         clear both
-                .z
-                    display none
                 .h-g
                     .top-g
                         .h
@@ -297,7 +302,6 @@ export default
                     color #C76E06
                 .ungi, .gi, .g
                     color green
-                    padding-right 0.2em
                     font-style italic
                 .label-g
                     color green
@@ -332,11 +336,8 @@ export default
                     display block
                 .infl
                     display block
-                    .inflection
-                        margin-right .4em
                 .para
                     display block
-                    padding-left 2px
                 .wordbox
                     display block
                     margin-left 18px
@@ -348,7 +349,6 @@ export default
                     clear both
                 .word
                     display table-cell
-                    margin 0px auto 0px auto
                     background-color #C76E06
                     color #FAFAFA
                     text-transform uppercase
@@ -367,7 +367,6 @@ export default
                     display block
                     text-transform uppercase
                     font-size small
-                .collsubhead
                 .table
                     display table
                     margin 12px 0 8px 0
@@ -426,7 +425,6 @@ export default
                 .symbols-oppsym
                     background darkred
                 .symbols-drsym
-                    font-style normal
                     font-size 70%
                     color rgb(0, 0, 0)
                 .symbols-para_square
@@ -454,15 +452,8 @@ export default
                     display none
                 .symbols-small_coresym
                     display none
-                .def-g
-                    padding-left 2px
                 .z_ab
-                    font-weight normal
                     color green
-                    padding-right 0.2em
-                .ab
-                    .z
-                        font-weight normal
                 .gr, .subject
                     color green
                 .dr
