@@ -46,6 +46,9 @@ export default
                 $('.chn').each (i,e)->
                     $(e).text (i,text)->
                         text.replace(/╱/g,'/').replace(/；/g,'、')
+                $('.tx').each (i,e)->
+                    $(e).text (i,text)->
+                        text.replace(/╱/g,'/').replace(/；/g,'、')
                 $('a[type="sound"]').each (i,e)=>
                     $(e).replaceWith("""
                     <audio id="audio-#{i}"
@@ -53,6 +56,17 @@ export default
                     </audio>
                     <span onclick="document.querySelector('#audio-#{i}').play()" style="cursor:pointer">▶</span>
                     """)
+                setTimeout (->
+                    document.querySelector('#audio-0')?.play()
+                ), 200
+                if item.origin
+                    $_ = cheerio.load(item.origin)
+                    $_($_('object')?[1]).attr 'data', (i, link)->
+                        "http://www.dicts.cn#{link}"
+                    $.root().append($_.html())
+                if item.word_root
+                    $_ = cheerio.load(item.word_root.replace(/(来自.*?\*)/g,'').replace(/[.。]/g,'。<br>'))
+                    $('.h').after("<div class='word-root'>#{$_.html()}</div>")
             $.html()
         set_content_type_class: (item)->
             item.type.split('/')[0]
@@ -82,7 +96,7 @@ export default
         window.websocket_connect=->
             if !window.ws || Date.now()-ws.last_connected>1000*5
                 console.log 'try sconnecting to the server'
-                window.ws         = new WebSocket 'ws://localhost:8081/ws'
+                window.ws         = new WebSocket "ws://#{location.hostname}:8081/ws"
                 ws.last_connected = new Date()
                 ws.onopen    = (event)->
                     console.log 'websocket connected with server'
@@ -108,9 +122,10 @@ export default
         document.onkeydown=(event)->
             key=event.key
             
+            if event.getModifierState('Control') || event.getModifierState('Alt') then return
             if event.target==search_bar.input_el
                 null
-            if event.target!=search_bar.input_el && !event.getModifierState('Control')
+            if event.target!=search_bar.input_el
                 if !isNaN(key)
                     dict.select_item_i(key-1)
                     event.preventDefault()
@@ -170,10 +185,11 @@ export default
 
 
 <style lang="stylus">
-    html
-        height 100%
+    html, body
+        overflow-y hidden
     #dict
         width 100%
+        height 97vh
         margin auto
         #header
             padding unset
@@ -188,7 +204,6 @@ export default
                         border-color #888
         #body
             #sidebar
-                height 620px
                 min-width 250px
                 border-right 1px solid #ccc
                 border-left 1px solid #ccc
@@ -206,7 +221,6 @@ export default
                     .i
                         color:#757575
             #content
-                height 620px
                 border-right 1px solid #ccc
                 border-bottom 1px solid #ccc
                 word-break keep-all
@@ -232,6 +246,11 @@ export default
                     font-size 1.1rem
                 /* 牛津高阶OALD */
             #content.en-OALD
+                .word-root
+                    margin-bottom 1rem
+                    font-weight bold
+                .d .chn
+                    font-weight bold
                 .gl
                     &:after
                         content ' '
@@ -241,9 +260,10 @@ export default
                     display none
                 .pos
                     display block
-                    font-size 2rem
                     color #d11000
                     margin-top 1rem
+                    font-weight bold
+                    font-size 1.2rem
                 .fayin
                     display inline
                 .sd
@@ -319,6 +339,7 @@ export default
                     display block
                 .n-g
                     display block
+                    margin-bottom 1rem
                 .x-g
                     display block
                     margin-left 2em
@@ -458,5 +479,13 @@ export default
                     color green
                 .dr
                     color blue
+            
+                #cigencizui-content
+                    .word
+                        display unset
+                        background-color unset
+                        color unset
+                        text-transform unset
+    
                 
 </style>

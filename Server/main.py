@@ -1,8 +1,9 @@
 import json
+import dict as d
 from flask import Flask
 from flask_sockets import Sockets
-
-import dict as d
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 
 app = Flask(__name__)
 sockets = Sockets(app)
@@ -26,8 +27,6 @@ def websocket_dispatch(ws):
 
 
 if __name__ == '__main__':
-    from gevent import pywsgi
-    from geventwebsocket.handler import WebSocketHandler
-    server = pywsgi.WSGIServer(('', 8081), app, handler_class=WebSocketHandler)
+    server = pywsgi.WSGIServer(('0.0.0.0', 8081), app, handler_class=WebSocketHandler)
     server.serve_forever()
     # app.run(host='0.0.0.0',port=8080,debug=True)

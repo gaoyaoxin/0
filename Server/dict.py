@@ -30,20 +30,42 @@ def search(search_text:str, is_load_assets=True)->list:
                 if m:
                     asset_key=f'{m.group(1)}/{m.group(2)}.{m.group(3)}'
                     if asset_key not in assets.keys():
-                        with open(f'data/OALD/data/{asset_key}', 'rb') as f:
-                            assets[asset_key] = base64.b64encode(f.read()).decode('utf-8')
+                        try:
+                            with open(f'data/OALD/data/{asset_key}', 'rb') as f:
+                                assets[asset_key] = base64.b64encode(f.read()).decode('utf-8')
+                        except FileNotFoundError: pass
                 # 加载、编解码发音（只要美音），加入 assets
                 m = re.match(r'.*"sound://(us/.*?)"',s)
                 if m:
                     asset_key = m.group(1)
                     if asset_key not in assets.keys():
-                        with open(f'data/OALD/data/{asset_key}', 'rb') as f:
-                            ogg = f.read()
-                        wav_len = speexdec(ogg, len(ogg), wav)
-                        base64_wav = base64.b64encode(wav[:wav_len]).decode('utf-8')
-                        assets[asset_key] = base64_wav
+                        try:
+                            with open(f'data/OALD/data/{asset_key}', 'rb') as f:
+                                ogg = f.read()
+                            wav_len = speexdec(ogg, len(ogg), wav)
+                            base64_wav = base64.b64encode(wav[:wav_len]).decode('utf-8')
+                            assets[asset_key] = base64_wav
+                        except FileNotFoundError: pass
             return assets
-        return [{'index':item['index'], 'type':'en/OALD' , 'content':item['content'], 'assets': load_assets(item)} for item in results]
+
+        def craw_origin(index, item):
+            # if index>0: return
+            # word = item['index']
+            # resp = requests.get(f'http://www.dicts.cn/dict/dict/dict!searchhtml4.asp?id={word}').text
+            # resp_ = requests.get(f'http://www.dicts.cn/{resp[1:-1]}')
+            # html = resp_.content.decode('utf-8')
+            # soup = BeautifulSoup(html, 'lxml')
+            # return str(soup.find(id='cigencizui-content'))
+            pass
+            
+        return [{
+            'index'   : item['index'], 
+            'type'    : 'en/OALD',
+            'content' : item['content'],
+            'word_root': item.get('word_root'),
+            'assets'  : load_assets(item),
+            # 'origin'  : craw_origin(i, item)
+        } for i,item in enumerate(results)]
     else:
         def render_item(item):
             if item['content'][0].startswith('@@@LINK='):
