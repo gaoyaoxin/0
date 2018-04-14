@@ -96,7 +96,7 @@ webpack_config =
     devServer:
         clientLogLevel: 'warning'
         hot           : true
-        contentBase   : false
+        contentBase   : 'static'
         compress      : true
         host          : process.env.HOST || '0.0.0.0'
         port          : process.env.PORT && Number(process.env.PORT) || 8080
