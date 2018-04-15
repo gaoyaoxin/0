@@ -94,17 +94,18 @@ webpack_config =
     devtool: 'cheap-module-eval-source-map',
     
     devServer:
-        clientLogLevel: 'warning'
-        hot           : true
-        contentBase   : 'static'
-        compress      : true
-        host          : process.env.HOST || '0.0.0.0'
-        port          : process.env.PORT && Number(process.env.PORT) || 8080
-        open          : false
-        overlay       : true # error overlay
-        proxy         : {}
-        quiet         : true # necessary for FriendlyErrorsPlugin
-        watchOptions  : poll: false
+        clientLogLevel  : 'warning'
+        hot             : true
+        contentBase     : 'static'
+        compress        : true
+        host            : process.env.HOST || '0.0.0.0'
+        port            : process.env.PORT && Number(process.env.PORT) || 8080
+        open            : false
+        overlay         : true # error overlay
+        proxy           : {}
+        quiet           : true # necessary for FriendlyErrorsPlugin
+        watchOptions    : poll: false
+        disableHostCheck: true
         # historyApiFallback:
         #     rewrites: [{
         #         from: /.*/

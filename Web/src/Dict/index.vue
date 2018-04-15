@@ -193,7 +193,7 @@ export default
 
 <style lang="stylus">
     html, body
-        overflow-y hidden
+        font-family 'XHei iOS7 Mono' ,Menlo, '华文细黑'
     #dict
         width 100%
         height 97vh

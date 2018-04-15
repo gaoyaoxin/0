@@ -7,7 +7,25 @@ html
         link(rel="icon" type="image/x-icon" href=require('./favicon.ico'))
     body
         #root
-        script(src="./lib/pcmdata.min.js")
+            p 正在加载... 大约需要半分钟，查询单词大约需要 3 秒钟。
+            p 请确保你所使用的设备支持 websocket 协议，否则无法查询单词。
+            a(href='https://github.com/ShenHongFei/iDict') https://github.com/ShenHongFei/iDict
+            pre
+                | 快捷键（全程无需鼠标）
+                | 全局
+                | Esc 聚焦输入框并清空
+                | 焦点位于输入框
+                | Enter 查询单词（正则表达式）
+                | 焦点不位于输入框
+                | Tab/Shift+Tab 上下移动条目
+                | e 聚焦输入框编辑查询内容（不清空）
+                | f 或 s 聚焦输入框输入查询内容（清空）
+                | j/J 向下滚动／直达底部
+                | k/K 向上滚动／直达顶部
+                | h 后退，转到上一个历史查询词条
+                | l 前进，转到下一个历史查询词条
+
+script(src="./lib/pcmdata.min.js")
         script(src="./lib/aurora.js")
         script(src="./lib/bitstring.js")
         script(src="./lib/aurora-speex.js")
