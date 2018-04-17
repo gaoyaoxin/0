@@ -51,7 +51,7 @@ def search(search_text:str, is_load_assets=True)->list:
             first_line = item['content'].split('\n')[0]
             if first_line.startswith('@@@LINK='):
                 real_index=first_line.replace('@@@LINK=','')
-                item = jp.find({'index':real_index})
+                item = jp.find_one({'index':real_index})
             return {
                 'index'   : item['index'],
                 'type'    : 'jp/JTS',
