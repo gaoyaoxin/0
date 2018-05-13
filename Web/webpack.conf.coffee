@@ -1,19 +1,18 @@
 # see http://vuejs-templates.github.io/webpack for documentation.
-path       = require('path')
 portfinder = require('portfinder')
 webpack    = require('webpack')
 
-HtmlWebpackPlugin    = require('html-webpack-plugin')
-FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+HtmlWebpackPlugin = require('html-webpack-plugin')
 
 
 webpack_config =
-    entry: 
+    entry: # 从每个入口开始构建依赖图，生成多个 bundle.js 文件
         index: './src/index.coffee'
+        album: './src/Album/index.coffee'
     output:
         path      : __dirname+'/dist'
-        filename  : 'bundle.js'
-        publicPath: '/'
+        filename  : '[name].js'
+        publicPath: '/' # 通过 URL 访问的路径，如 /index.js
         pathinfo  : true
     resolve:
         extensions: [
@@ -82,10 +81,15 @@ webpack_config =
         new webpack.HotModuleReplacementPlugin()
         new webpack.NamedModulesPlugin()
         new webpack.NoEmitOnErrorsPlugin()
+        new HtmlWebpackPlugin( # 最终生成一个 html 文件
+            filename    : 'index.html'      # 生成的 html 路径，默认为 /index.html
+            template    : 'src/index.pug'
+            inject      : false             # 是否自动插入 bundle.js（默认插入） ，插入位置等
+         )
         new HtmlWebpackPlugin(
-            name    : 'index.html'
-            template: 'src/index.pug'
-            inject  : true
+            filename    : 'album.html'
+            template    : 'src/Album/index.pug'
+            inject      : false
          )
     ]
     
@@ -94,16 +98,17 @@ webpack_config =
     devtool: 'cheap-module-eval-source-map',
     
     devServer:
-        clientLogLevel  : 'warning'
-        hot             : true
-        contentBase     : 'static'
-        compress        : true
         host            : process.env.HOST || '0.0.0.0'
         port            : process.env.PORT && Number(process.env.PORT) || 8080
+        publicPath      : '/'    # 部署网站的根目录
+        contentBase     : 'root' # 将项目中的 root 文件夹作为部署网站的 Web 文件根目录，与 URL 对应
+        hot             : true
+        compress        : true
+        clientLogLevel  : 'warning'
         open            : false
-        overlay         : true # error overlay
+        overlay         : true   # error overlay
         proxy           : {}
-        quiet           : true # necessary for FriendlyErrorsPlugin
+        quiet           : false
         watchOptions    : poll: false
         disableHostCheck: true
         # historyApiFallback:
@@ -111,14 +116,10 @@ webpack_config =
         #         from: /.*/
         #         to  : '/index.html'
         #     }]
-#        notifyOnErrors: true
 
-    node:
-        # prevent webpack from injecting useless setImmediate polyfill because Vue
-        # source contains it (although only uses it if it's native).
+    node: # prevent webpack from injecting useless setImmediate polyfill because Vue source contains it (although only uses it if it's native).
         setImmediate : false
-        # prevent webpack from injecting mocks to Node native modules
-        # that does not make sense for the client
+        # prevent webpack from injecting mocks to Node native modules that does not make sense for the client
         dgram        : 'empty'
         fs           : 'empty'
         net          : 'empty'
@@ -134,21 +135,6 @@ module.exports = new Promise (resolve, reject) =>
         else
             process.env.PORT = port # publish the new Port, necessary for e2e tests
             webpack_config.devServer.port = port # add port to devServer config
-            webpack_config.plugins.push new FriendlyErrorsPlugin
-                compilationSuccessInfo: messages: [ "Your application is running here: http://#{webpack_config.devServer.host}:#{port}" ]
-                onErrors: (()=>
-                    notifier = require('node-notifier')
-                    (severity, errors) =>
-                        if severity != 'error'
-                            return
-                        error = errors[0]
-                        filename = error.file and error.file.split('!').pop()
-                        notifier.notify
-                            title: error.toString()
-                            message: severity + ': ' + error.name
-                            subtitle: filename || ''
-                        return
-                )()
             resolve webpack_config
         return
     return

@@ -3,7 +3,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import Dict from './Dict/index.vue'
 
-# 将Vue组件挂在到根元素
+# 将Vue组件(Dict)挂载到根元素
 window.Vue               = Vue
 Vue.config.productionTip = false
 Vue.use ElementUI
