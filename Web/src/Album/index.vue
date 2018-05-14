@@ -1,7 +1,7 @@
 <template lang="pug">
-    #album
+    #album(v-if='script')
         h6#title 事件: {{script_i+1}}, 句子: {{stc_i+1}}, 脚本文件: {{script.file}} 
-        #sentence(v-if='script' v-html='stc.html')
+        #sentence(v-html='stc.html')
 </template>
     
 
@@ -72,7 +72,7 @@
                 if event.getModifierState('Control') || event.getModifierState('Alt') then return
                 if key == 'ArrowLeft'  || key == 'k'
                     album.prev_stc()
-                if key == 'ArrowRight' || key == 'j'
+                if key == 'ArrowRight' || key == 'j' || key == ' '
                     album.next_stc()
                 if key == 'ArrowUp'
                     album.prev_script()
