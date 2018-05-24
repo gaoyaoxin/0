@@ -21,7 +21,7 @@
                         dict.item=dict.items[0]
                     else
                         ws.send JSON.stringify
-                            api: 'search'
+                            api: '/dict/search'
                             args:
                                 search_text: input_text
                         console.log 'search:',input_text

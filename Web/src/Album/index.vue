@@ -1,24 +1,25 @@
 <template lang="pug">
     #album(v-if='script')
-        h6#title 事件: {{script_i+1}}, 句子: {{stc_i+1}}, 脚本文件: {{script.file}} 
-        #sentence(v-html='stc.html')
+        #character(v-if='chr' v-html='chr.html+"："')
+        #sentence(v-html='stc')
+        div#caption 事件: {{script_i+1}}, 句子: {{line_i+1}}, 脚本文件: {{script.name}}
 </template>
-    
+
 
 <script lang="coffee">
     export default
-        data      : ->
+        data: ->
             script_i    : 0
             script      : null
             script_cache: {}
             
-            # sentence index
-            stc_i       : 0
+            line_i       : 0
+            stc          : null
             
-        computed:
-            stc: ->
-                this.script?.sentences[this.stc_i]
-        methods   :
+            # 当前角色
+            chr         : null
+            
+        methods:
             load_script: (index)->
                 if album.script_cache[index]
                     album.script = album.script_cache[index]
@@ -28,15 +29,25 @@
                     api : '/album/get_script'
                     args: {index: index}
             next_stc   : ->
-                album.stc_i++ if album.stc_i < album.script.sentences.length - 1
+                if not (album.line_i < album.script.lines.length - 1) then return
+                s = album.script.lines[album.line_i + 1]
+                if s.text in album.script.characters
+                    album.chr = s
+                    album.line_i += 2
+                    album.stc = album.script.lines[album.line_i].html
+                else
+                    album.line_i += 1
+                    album.stc += '<br>' + album.script.lines[album.line_i].html
+                setTimeout(window.scrollTo, 0.1, 0, document.body.scrollHeight)
             prev_stc   : ->
-                album.stc_i-- if album.stc_i > 0
+                album.line_i-- if album.line_i > 0
+                album.stc = album.script.lines[album.line_i].html
             next_script: ->
                 album.load_script(++album.script_i)
-                album.stc_i = 0
+                album.line_i = 0
             prev_script: ->
                 album.load_script(--album.script_i) if album.script_i - 1 >= 0
-                album.stc_i = 0
+                album.line_i = 0
         mounted   : ->
             window.album = album = this
             window.websocket_connect = ->
@@ -54,7 +65,7 @@
                         resp = JSON.parse(event.data)
                         console.log resp
                         album.script_cache[resp.retval.index] = album.script = resp.retval
-                        
+                        album.stc = album.script.lines[album.line_i].html
                     ws.onerror = (event)->
                         console.log 'Websocket 错误，5 秒后尝试重连'
                         setTimeout websocket_connect, 5000
@@ -83,12 +94,19 @@
 
 
 <style lang="stylus">
-    h6
-        font-weight normal
+    #character
+        min-height 3rem
+        font-size 3rem
+        margin-bottom 1rem
     #sentence
-        font-size 5rem
-        line-height 12rem
+        font-size 3rem
+        line-height 6rem
         word-break keep-all
         word-wrap break-word
-    
+    #caption
+        position fixed
+        bottom 1vh
+        right 1vw
+    rt
+        user-select none
 </style>

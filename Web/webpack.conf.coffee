@@ -9,6 +9,7 @@ webpack_config =
     entry: # 从每个入口开始构建依赖图，生成多个 bundle.js 文件
         index: './src/index.coffee'
         album: './src/Album/index.coffee'
+        reader: './src/Reader/index.coffee'
     output:
         path      : __dirname+'/dist'
         filename  : '[name].js'
@@ -89,6 +90,11 @@ webpack_config =
         new HtmlWebpackPlugin(
             filename    : 'album.html'
             template    : 'src/Album/index.pug'
+            inject      : false
+         )
+        new HtmlWebpackPlugin(
+            filename    : 'reader.html'
+            template    : 'src/Reader/index.pug'
             inject      : false
          )
     ]

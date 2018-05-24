@@ -3,6 +3,7 @@ from typing import Dict
 
 import dict as d
 import album
+import reader
 
 from flask import Flask
 from flask_sockets import Sockets
@@ -28,17 +29,9 @@ def websocket_dispatch(ws):
             request = json.loads(frame)
             api : str   = request['api']
             args: Dict  = request['args']
-            if api.startswith('/album/'):
-                api = api[7:]
-                if not getattr(album, api):
-                    print(f'API: /album/{api} 不存在，忽略请求', flush=True)
-                    return
-                status, retval = getattr(album, api)(**args)
-            else:
-                if not getattr(d, api):
-                    print(f'API: {api} 不存在，忽略请求', flush=True)
-                    return
-                status, retval = getattr(d,     api)(**args)
+            _, mod, method = api.split('/')
+            if mod == 'dict': mod = 'd'
+            status, retval = getattr(globals()[mod], method)(**args)
         except json.decoder.JSONDecodeError as e:
             status = 400
             retval = 'JSON Format Error: ' + e.msg

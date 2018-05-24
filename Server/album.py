@@ -1,25 +1,27 @@
-import glob
-
+from pymongo import MongoClient
 from furigana.furigana import get_html
 
-scripts = [path.replace('\\','/') for path in glob.glob('E:/ACGN/WHITE ALBUM 2/scripts/jp/*')]
+client = MongoClient()
+db = client['0']['scripts']
+scripts = db.find()
 
-scripts_cache = {}
+resp_cache = {}
 
 def get_script(index=0):
-    if index in scripts_cache: return 200, scripts_cache[index]
-    with open(scripts[index], 'r', encoding='utf-8') as f:
-        text = f.read()
-    sentences = text.splitlines()
-    scripts_cache[index] = script = {
+    if index in resp_cache: return 200, resp_cache[index]
+    script = scripts[index]
+    lines = script['lines']
+    resp = {
         'index': index,
-        'file': scripts[index],
-        'sentences': [{
-            'text': sentence,
-            'html': get_html(sentence)
-        } for sentence in sentences]
+        'name': script['name'],
+        'characters': script['characters'],
+        'lines': [{
+            'text': line,
+            'html': get_html(line)
+        } for line in lines]
     }
-    return 200, script
+    resp_cache[index] = resp
+    return 200, resp
 
 def REPL():
     get_script()
