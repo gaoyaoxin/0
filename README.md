@@ -6,9 +6,9 @@
 
 ## 预览
 
-![2](preview/2.png?raw=true)
+![2](Web/preview/2.png?raw=true)
 
-![1](preview/1.png?raw=true)
+![1](Web/preview/1.png?raw=true)
 
 ## 词典
 
@@ -78,20 +78,9 @@ npm run build --report
 # 牛津高阶英汉双解词典（第８版） 数据库较大，他日上传
 ```
 
-## Todo
+## 数据库
 
-entry://# 快速导航
-​	
-see also: <a href="entry://xxx"> 条目的跳转
-​	
-.spx 语音播放
+![MongoDB](Web/preview/mongodb-01.png?raw=true)
 
-	<a href="sound://uk/enumerate__gb_1.spx">
-	同一条目中重复元素
+![MongoDB](Web/preview/mongodb-02.png?raw=true)
 
-词典数据模型设计
-	需求分析
-		能够根据正则表达式迅速找到匹配单词并加载解释
-		单词的解释不在程序启动时全部加载到内存（已有300M，以后更多）
-		方便的更新这个单词（对象）的相关信息，添加笔记，上次查询时间，查询次数，例句，并在更新后能够方便存储到硬盘上
-*可视化编辑
